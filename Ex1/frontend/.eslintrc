@@ -1,0 +1,18 @@
+{
+  "extends": ["plugin:prettier/recommended", "plugin:react-hooks/recommended", "plugin:react/recommended", "prettier", "next/core-web-vitals"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "printWidth": 150
+      }
+    ]
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  }
+}
