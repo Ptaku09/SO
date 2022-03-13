@@ -1,18 +1,18 @@
 package com.exercise1.backend;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import com.exercise1.backend.comparators.RemainingTimeComparator;
 
-public class FCFS {
+import java.util.ArrayList;
+
+public class SRTF {
     private ArrayList<Process> processes;
 
-    public FCFS(ArrayList<Process> processes) {
+    public SRTF(ArrayList<Process> processes) {
         this.processes = processes;
     }
 
     public AlgorithmInformation run() {
-        Queue<Process> activeProcesses = new LinkedList<>();
+        ArrayList<Process> activeProcesses = new ArrayList<>();
         long totalProcesses = processes.size();
         long timeOfActivity = 0;
         double sumOfWaitingTime = 0;
@@ -20,21 +20,29 @@ public class FCFS {
         long numberOfSwitchingOperations = 0;
         long longestWaitingTime = 0;
 
-
         while (!processes.isEmpty() || !activeProcesses.isEmpty()) {
+            ArrayList<Integer> recentlyAddedProcessesIds = new ArrayList<>();
+
             while (!processes.isEmpty() && processes.get(0).getTimeOfAppearance() == timeOfActivity) {
                 activeProcesses.add(processes.get(0));
+                recentlyAddedProcessesIds.add(processes.get(0).getId());
+                activeProcesses.sort(new RemainingTimeComparator());
+
                 processes.remove(0);
             }
 
-            Process currentProcess = activeProcesses.peek();
+            Process currentProcess = null;
+
+            if (!activeProcesses.isEmpty()) {
+                currentProcess = activeProcesses.get(0);
+
+                if (recentlyAddedProcessesIds.contains(currentProcess.getId()))
+                    numberOfSwitchingOperations++;
+            }
 
             if (currentProcess != null) {
                 currentProcess.execute();
                 currentProcess.updateCurrent();
-
-//                System.out.println(activeProcesses.size() + "     " + currentProcess.getRemainingTime());
-
 
                 if (currentProcess.isFinished()) {
                     sumOfWaitingTime += currentProcess.getWaitingTime();
@@ -44,12 +52,13 @@ public class FCFS {
                     if (longestWaitingTime < currentProcess.getWaitingTime())
                         longestWaitingTime = currentProcess.getWaitingTime();
 
-                    activeProcesses.remove();
+                    activeProcesses.remove(0);
                 }
             }
 
+            Process finalCurrentProcess = currentProcess;
             activeProcesses.forEach(pr -> {
-                if (!pr.equals(currentProcess))
+                if (!pr.equals(finalCurrentProcess))
                     pr.update();
             });
             timeOfActivity++;

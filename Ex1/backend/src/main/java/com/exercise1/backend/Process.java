@@ -1,27 +1,27 @@
 package com.exercise1.backend;
 
-public class Process {
+public class Process implements Cloneable {
     private int id;
     private int processLength;
     private int timeOfAppearance;
     private long waitingTime = 0;
     private long timeFromFirstExecution = 0;
-    private int timeToFinish;
+    private int remainingTime;
     private boolean isFinished = false;
     private boolean isActive = false;
 
     public Process(int id, int processLength, int timeOfAppearance) {
         this.id = id;
         this.processLength = processLength;
-        this.timeToFinish = processLength;
+        this.remainingTime = processLength;
         this.timeOfAppearance = timeOfAppearance;
     }
 
     public void execute() {
         isActive = true;
-        timeToFinish -= 1;
+        remainingTime -= 1;
 
-        if (timeToFinish == 0) {
+        if (remainingTime == 0) {
             isFinished = true;
         }
     }
@@ -53,8 +53,8 @@ public class Process {
         return timeFromFirstExecution;
     }
 
-    public int getTimeToFinish() {
-        return timeToFinish;
+    public int getRemainingTime() {
+        return remainingTime;
     }
 
     public int getTimeOfAppearance() {
@@ -66,7 +66,12 @@ public class Process {
     }
 
     @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
     public String toString() {
-        return String.format("Waiting time: %8d%nTime from first execution: %8d%nProcess time: %8d%nTime to finish: %8d%nTime of appearance: %8d%n%n", waitingTime, timeFromFirstExecution, processLength, timeToFinish, timeOfAppearance);
+        return String.format("Waiting time: %8d%nTime from first execution: %8d%nProcess time: %8d%nTime to finish: %8d%nTime of appearance: %8d%n%n", waitingTime, timeFromFirstExecution, processLength, remainingTime, timeOfAppearance);
     }
 }

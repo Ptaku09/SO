@@ -11,7 +11,7 @@ public class GenerateProcesses {
         ArrayList<Process> processes = new ArrayList<>();
 
         for (int i = 0; i < amount; i++)
-            processes.add(new Process(i + 1, (int) Math.round(durationDistribution.sample() * 1000), (int) Math.round(appearanceDistribution.sample() * 1000)));
+            processes.add(new Process(i + 1, (int) Math.round(durationDistribution.sample() * 1000) + 1, (int) Math.round(appearanceDistribution.sample() * 100)));
 
         return processes;
     }
