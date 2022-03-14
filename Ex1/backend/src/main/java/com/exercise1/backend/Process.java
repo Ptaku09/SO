@@ -6,9 +6,11 @@ public class Process implements Cloneable {
     private int timeOfAppearance;
     private long waitingTime = 0;
     private long timeFromFirstExecution = 0;
+    private long timeToFirstExecution = 0;
     private int remainingTime;
     private boolean isFinished = false;
     private boolean isActive = false;
+    private long firstActivationTime;
 
     public Process(int id, int processLength, int timeOfAppearance) {
         this.id = id;
@@ -31,6 +33,8 @@ public class Process implements Cloneable {
 
         if (isActive)
             timeFromFirstExecution++;
+        else
+            timeToFirstExecution++;
     }
 
     public void updateCurrent() {
@@ -59,6 +63,22 @@ public class Process implements Cloneable {
 
     public int getTimeOfAppearance() {
         return timeOfAppearance;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public long getFirstActivationTime() {
+        return firstActivationTime;
+    }
+
+    public long getTimeToFirstExecution() {
+        return timeToFirstExecution;
+    }
+
+    public void setFirstActivationTime(long firstActivationTime) {
+        this.firstActivationTime = firstActivationTime;
     }
 
     public boolean isFinished() {

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 class Test {
     public static void main(String[] args) {
-        Manager man = new Manager(5000, 1, 4);
+        Manager man = new Manager(3000, 1, 4);
         man.FCFS();
     }
 }
@@ -35,8 +35,11 @@ public class Manager {
     public void FCFS() {
         FCFS fcfs = new FCFS(fcfsProcesses);
         SRTF srtf = new SRTF(srtfProcesses);
-//        System.out.println(fcfs.run());
+        RR rr = new RR(rrProcesses, 20);
+        System.out.println(fcfs.run());
         System.out.println();
         System.out.println(srtf.run());
+        System.out.println();
+        System.out.println(rr.run());
     }
 }

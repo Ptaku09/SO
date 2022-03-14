@@ -19,6 +19,8 @@ public class SRTF {
         double sumOfRunningTime = 0;
         long numberOfSwitchingOperations = 0;
         long longestWaitingTime = 0;
+        long largestFirstActivationTime = 0;
+        double sumOfTimeToFirstExecution = 0;
 
         while (!processes.isEmpty() || !activeProcesses.isEmpty()) {
             ArrayList<Integer> recentlyAddedProcessesIds = new ArrayList<>();
@@ -41,13 +43,21 @@ public class SRTF {
             }
 
             if (currentProcess != null) {
+                if (!currentProcess.isActive()) {
+                    currentProcess.setFirstActivationTime(timeOfActivity);
+                }
+
                 currentProcess.execute();
                 currentProcess.updateCurrent();
 
                 if (currentProcess.isFinished()) {
                     sumOfWaitingTime += currentProcess.getWaitingTime();
                     sumOfRunningTime += currentProcess.getTimeFromFirstExecution();
+                    sumOfTimeToFirstExecution += currentProcess.getTimeToFirstExecution();
                     numberOfSwitchingOperations++;
+
+                    if (currentProcess.getFirstActivationTime() > largestFirstActivationTime)
+                        largestFirstActivationTime = currentProcess.getFirstActivationTime();
 
                     if (longestWaitingTime < currentProcess.getWaitingTime())
                         longestWaitingTime = currentProcess.getWaitingTime();
@@ -64,6 +74,6 @@ public class SRTF {
             timeOfActivity++;
         }
 
-        return new AlgorithmInformation(sumOfWaitingTime / totalProcesses, sumOfRunningTime / totalProcesses, longestWaitingTime, numberOfSwitchingOperations);
+        return new AlgorithmInformation(sumOfWaitingTime / totalProcesses, sumOfRunningTime / totalProcesses, sumOfTimeToFirstExecution / totalProcesses, numberOfSwitchingOperations);
     }
 }
