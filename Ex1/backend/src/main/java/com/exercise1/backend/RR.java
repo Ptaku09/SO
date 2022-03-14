@@ -18,10 +18,8 @@ public class RR {
         double sumOfWaitingTime = 0;
         double sumOfRunningTime = 0;
         long numberOfSwitchingOperations = 0;
-        long longestWaitingTime = 0;
         int processExecution = 0;
         int currentProcessId = 0;
-        long largestFirstActivationTime = 0;
         double sumOfTimeToFirstExecution = 0;
 
         while (!processes.isEmpty() || !activeProcesses.isEmpty()) {
@@ -61,12 +59,6 @@ public class RR {
                     sumOfTimeToFirstExecution += currentProcess.getTimeToFirstExecution();
                     numberOfSwitchingOperations++;
 
-                    if (currentProcess.getFirstActivationTime() > largestFirstActivationTime)
-                        largestFirstActivationTime = currentProcess.getFirstActivationTime();
-
-                    if (longestWaitingTime < currentProcess.getWaitingTime())
-                        longestWaitingTime = currentProcess.getWaitingTime();
-
                     activeProcesses.remove(currentProcessId);
                     processExecution = 0;
                 }
@@ -80,6 +72,6 @@ public class RR {
             timeOfActivity++;
         }
 
-        return new AlgorithmInformation(sumOfWaitingTime / totalProcesses, sumOfRunningTime / totalProcesses, sumOfTimeToFirstExecution / totalProcesses, numberOfSwitchingOperations);
+        return new AlgorithmInformation("Round Robin", sumOfWaitingTime / totalProcesses, sumOfRunningTime / totalProcesses, sumOfTimeToFirstExecution / totalProcesses, numberOfSwitchingOperations);
     }
 }

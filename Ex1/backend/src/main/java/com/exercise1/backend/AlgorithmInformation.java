@@ -1,16 +1,38 @@
 package com.exercise1.backend;
 
 public class AlgorithmInformation {
+    private String algorithmName;
     private double averageWaitingTime;
     private double averageRunningTime;
     private double averageTimeToFirstExecution;
     private long numberOfSwitchingOperations;
 
-    public AlgorithmInformation(double averageWaitingTime, double averageRunningTime, double averageTimeToFirstExecution, long numberOfSwitchingOperations) {
+    public AlgorithmInformation(String algorithmName, double averageWaitingTime, double averageRunningTime, double averageTimeToFirstExecution, long numberOfSwitchingOperations) {
+        this.algorithmName = algorithmName;
         this.averageWaitingTime = averageWaitingTime;
         this.averageRunningTime = averageRunningTime;
         this.averageTimeToFirstExecution = averageTimeToFirstExecution;
         this.numberOfSwitchingOperations = numberOfSwitchingOperations;
+    }
+
+    public String getAlgorithmName() {
+        return algorithmName;
+    }
+
+    public double getAverageWaitingTime() {
+        return averageWaitingTime;
+    }
+
+    public double getAverageRunningTime() {
+        return averageRunningTime;
+    }
+
+    public double getAverageTimeToFirstExecution() {
+        return averageTimeToFirstExecution;
+    }
+
+    public long getNumberOfSwitchingOperations() {
+        return numberOfSwitchingOperations;
     }
 
     @Override

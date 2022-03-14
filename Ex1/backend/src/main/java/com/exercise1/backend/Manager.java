@@ -8,6 +8,8 @@ class Test {
     public static void main(String[] args) {
         Manager man = new Manager(3000, 1, 4);
         man.FCFS();
+        man.SRTF();
+        man.RR(200);
     }
 }
 
@@ -32,14 +34,18 @@ public class Manager {
         }
     }
 
-    public void FCFS() {
+    public AlgorithmInformation FCFS() {
         FCFS fcfs = new FCFS(fcfsProcesses);
+        return fcfs.run();
+    }
+
+    public AlgorithmInformation SRTF() {
         SRTF srtf = new SRTF(srtfProcesses);
-        RR rr = new RR(rrProcesses, 20);
-        System.out.println(fcfs.run());
-        System.out.println();
-        System.out.println(srtf.run());
-        System.out.println();
-        System.out.println(rr.run());
+        return srtf.run();
+    }
+
+    public AlgorithmInformation RR(int singleExecutionTime) {
+        RR rr = new RR(rrProcesses, singleExecutionTime);
+        return rr.run();
     }
 }

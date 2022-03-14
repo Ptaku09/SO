@@ -18,8 +18,6 @@ public class FCFS {
         double sumOfWaitingTime = 0;
         double sumOfRunningTime = 0;
         long numberOfSwitchingOperations = 0;
-        long longestWaitingTime = 0;
-        long largestFirstActivationTime = 0;
         double sumOfTimeToFirstExecution = 0;
 
         while (!processes.isEmpty() || !activeProcesses.isEmpty()) {
@@ -44,12 +42,6 @@ public class FCFS {
                     sumOfTimeToFirstExecution += currentProcess.getTimeToFirstExecution();
                     numberOfSwitchingOperations++;
 
-                    if (currentProcess.getFirstActivationTime() > largestFirstActivationTime)
-                        largestFirstActivationTime = currentProcess.getFirstActivationTime();
-
-                    if (longestWaitingTime < currentProcess.getWaitingTime())
-                        longestWaitingTime = currentProcess.getWaitingTime();
-
                     activeProcesses.remove();
                 }
             }
@@ -61,6 +53,6 @@ public class FCFS {
             timeOfActivity++;
         }
 
-        return new AlgorithmInformation(sumOfWaitingTime / totalProcesses, sumOfRunningTime / totalProcesses, sumOfTimeToFirstExecution / totalProcesses, numberOfSwitchingOperations);
+        return new AlgorithmInformation("First Come First Serve", sumOfWaitingTime / totalProcesses, sumOfRunningTime / totalProcesses, sumOfTimeToFirstExecution / totalProcesses, numberOfSwitchingOperations);
     }
 }
