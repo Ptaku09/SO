@@ -1,49 +1,44 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import ExerciseBox from '../components/ExerciseBox';
 
 const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Next-app boilerplate</title>
+        <title>Operating Systems</title>
       </Head>
 
-      <div className="w-screen h-screen flex items-center justify-center flex-col">
-        <h1 className="absolute top-5 mx-auto text-5xl text-sky-700 border-b-2 border-b-sky-700 pb-5 px-7">Create-next-app boilerplate</h1>
-        <p className="text-4xl text-left mb-3">Contains:</p>
-        <ul className="list-disc text-lg">
-          {[
-            {
-              name: 'Typescript',
-              link: 'https://www.typescriptlang.org/',
-            },
-            {
-              name: 'Tailwind',
-              link: 'https://tailwindcss.com/',
-            },
-            {
-              name: 'Prettier',
-              link: 'https://prettier.io/',
-            },
-            {
-              name: 'ESLint',
-              link: 'https://eslint.org/',
-            },
-            {
-              name: 'Husky',
-              link: 'https://typicode.github.io/husky/#/',
-            },
-          ].map(({ name, link }: { name: string; link: string }) => {
-            return (
-              <li key={name}>
-                <a className="hover:border-b-2 hover:border-b-blue-500 hover:text-blue-500" href={link} target="_blank" rel="noreferrer">
-                  {name}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-        <p className="text-lg mt-3">...and more!</p>
+      <div className="bg-white p-5 shadow-md mb-5 rounded-xl">
+        <h1 className="relative 2xl:absolute 2xl:top-5 mx-auto text-5xl text-center text-sky-700 border-b-2 border-b-sky-700 pb-2 lg:px-7 font-['Lobster']">
+          Operating Systems
+        </h1>
+      </div>
+      <div className="w-full h-full mt-10 flex items-center justify-center gap-16 flex-wrap">
+        {[
+          {
+            desc: '⏰ Scheduling access to processor ⏰',
+            link: '/exercise1',
+          },
+          {
+            desc: 'unknown',
+            link: '#',
+          },
+          {
+            desc: 'unknown',
+            link: '#',
+          },
+          {
+            desc: 'unknown',
+            link: '#',
+          },
+          {
+            desc: 'unknown',
+            link: '#',
+          },
+        ].map(({ link, desc }: { link: string; desc: string }, i: number) => {
+          return <ExerciseBox key={i} number={i + 1} desc={desc} link={link} />;
+        })}
       </div>
     </>
   );
