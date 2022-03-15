@@ -6,21 +6,21 @@ import FormField from '../components/FormField';
 import React, { useState } from 'react';
 
 const initialState = {
-  amountOfObjects: 10000,
+  amountOfObjects: 10,
   rrExecTime: 200,
   alpha: 1,
   beta: 4,
 };
 
 export default function Exercise1() {
-  const { formValues, setFormValues, handleInputChange } = useForm(initialState);
+  const { formValues, handleInputChange } = useForm(initialState);
   const [isPending, setIsPending] = useState(false);
 
   const handleRunSimulation = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     setIsPending(true);
 
-    const res = await fetch('http://localhost:8000/exercise1', {
+    fetch('http://localhost:8080/exercise1', {
       method: 'POST',
       body: JSON.stringify({
         objects: formValues.amountOfObjects,
@@ -28,10 +28,12 @@ export default function Exercise1() {
         alpha: formValues.alpha,
         beta: formValues.beta,
       }),
-    });
-
-    console.log(res.json());
-    setIsPending(false);
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setIsPending(false);
+      });
   };
 
   return (
