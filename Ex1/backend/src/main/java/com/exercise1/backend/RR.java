@@ -1,77 +1,75 @@
 package com.exercise1.backend;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RR {
-    private ArrayList<Process> processes;
-    private int singleExecutionTime;
+    private List<Process> processes;
+    private final int singleExecutionTime;
 
-    public RR(ArrayList<Process> processes, int singleExecutionTime) {
+    public RR(List<Process> processes, int singleExecutionTime) {
         this.processes = processes;
         this.singleExecutionTime = singleExecutionTime;
     }
 
     public AlgorithmInformation run() {
-        ArrayList<Process> activeProcesses = new ArrayList<>();
-        long totalProcesses = processes.size();
-        long timeOfActivity = 0;
-        double sumOfWaitingTime = 0;
+        List<Process> alreadyAppearedProcesses = new ArrayList<>();
+        double totalAmountOfProcesses = processes.size();
+        int timeOfRunningInCurrentScope = 0;
+        int currentlyExecutedProcessPosition = 0;
+        double timeOfSystemActivity = 0;
+        double sumOfTotalWaitingTime = 0;
         double sumOfRunningTime = 0;
-        long numberOfSwitchingOperations = 0;
-        int processExecution = 0;
-        int currentProcessId = 0;
         double sumOfTimeToFirstExecution = 0;
+        double numberOfSwitchingOperations = 0;
 
-        while (!processes.isEmpty() || !activeProcesses.isEmpty()) {
-            while (!processes.isEmpty() && processes.get(0).getTimeOfAppearance() == timeOfActivity) {
-                activeProcesses.add(processes.get(0));
+        while (!processes.isEmpty() || !alreadyAppearedProcesses.isEmpty()) {
+            while (!processes.isEmpty() && processes.get(0).getTimeOfAppearance() == timeOfSystemActivity) {
+                alreadyAppearedProcesses.add(processes.get(0));
                 processes.remove(0);
             }
 
-            Process currentProcess = null;
+            Process currentlyExecutedProcess = null;
 
-            if (currentProcessId >= activeProcesses.size())
-                currentProcessId = 0;
+            if (currentlyExecutedProcessPosition >= alreadyAppearedProcesses.size())
+                currentlyExecutedProcessPosition = 0;
 
-            if (activeProcesses.size() > 0)
-                currentProcess = activeProcesses.get(currentProcessId);
+            if (alreadyAppearedProcesses.size() > 0)
+                currentlyExecutedProcess = alreadyAppearedProcesses.get(currentlyExecutedProcessPosition);
 
-            if (currentProcess != null) {
-                if (processExecution < singleExecutionTime) {
-                    if (!currentProcess.isActive()) {
-                        currentProcess.setFirstActivationTime(timeOfActivity);
-                    }
+            if (currentlyExecutedProcess != null) {
+                if (timeOfRunningInCurrentScope < singleExecutionTime) {
+                    if (!currentlyExecutedProcess.isActive())
+                        currentlyExecutedProcess.setFirstActivationTime(timeOfSystemActivity);
 
-                    currentProcess.execute();
-                    currentProcess.updateCurrent();
-                    processExecution++;
-
-
+                    currentlyExecutedProcess.execute();
+                    currentlyExecutedProcess.updateCurrent();
+                    timeOfRunningInCurrentScope++;
                 } else {
-                    processExecution = 0;
-                    currentProcessId++;
+                    timeOfRunningInCurrentScope = 0;
+                    currentlyExecutedProcessPosition++;
                     numberOfSwitchingOperations++;
                 }
 
-                if (currentProcess.isFinished()) {
-                    sumOfWaitingTime += currentProcess.getWaitingTime();
-                    sumOfRunningTime += currentProcess.getTimeFromFirstExecution();
-                    sumOfTimeToFirstExecution += currentProcess.getTimeToFirstExecution();
+                if (currentlyExecutedProcess.isFinished()) {
+                    sumOfTotalWaitingTime += currentlyExecutedProcess.getTotalWaitingTime();
+                    sumOfRunningTime += currentlyExecutedProcess.getTimeFromFirstExecution();
+                    sumOfTimeToFirstExecution += currentlyExecutedProcess.getTimeToFirstExecution();
                     numberOfSwitchingOperations++;
 
-                    activeProcesses.remove(currentProcessId);
-                    processExecution = 0;
+                    alreadyAppearedProcesses.remove(currentlyExecutedProcessPosition);
+                    timeOfRunningInCurrentScope = 0;
                 }
             }
 
-            Process finalCurrentProcess = currentProcess;
-            activeProcesses.forEach(pr -> {
-                if (!pr.equals(finalCurrentProcess))
+            Process finalCurrentlyExecutedProcess = currentlyExecutedProcess;
+            alreadyAppearedProcesses.forEach(pr -> {
+                if (!pr.equals(finalCurrentlyExecutedProcess))
                     pr.update();
             });
-            timeOfActivity++;
+            timeOfSystemActivity++;
         }
 
-        return new AlgorithmInformation("Round Robin", sumOfWaitingTime / totalProcesses, sumOfRunningTime / totalProcesses, sumOfTimeToFirstExecution / totalProcesses, numberOfSwitchingOperations);
+        return new AlgorithmInformation("Round Robin", sumOfTotalWaitingTime / totalAmountOfProcesses, sumOfRunningTime / totalAmountOfProcesses, sumOfTimeToFirstExecution / totalAmountOfProcesses, numberOfSwitchingOperations);
     }
 }

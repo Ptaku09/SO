@@ -1,22 +1,22 @@
 package com.exercise1.backend;
 
 public class Process implements Cloneable {
-    private int id;
-    private int processLength;
-    private int timeOfAppearance;
-    private long waitingTime = 0;
-    private long timeFromFirstExecution = 0;
-    private long timeToFirstExecution = 0;
+    private final int id;
+    private final int processLength;
+    private final int timeOfAppearanceInSystem;
+    private double totalWaitingTime = 0;
+    private double timeFromFirstExecution = 0;
+    private double timeToFirstExecution = 0;
     private int remainingTime;
     private boolean isFinished = false;
     private boolean isActive = false;
-    private long firstActivationTime;
+    private double firstActivationTime;
 
-    public Process(int id, int processLength, int timeOfAppearance) {
+    public Process(int id, int processLength, int timeOfAppearanceInSystem) {
         this.id = id;
         this.processLength = processLength;
         this.remainingTime = processLength;
-        this.timeOfAppearance = timeOfAppearance;
+        this.timeOfAppearanceInSystem = timeOfAppearanceInSystem;
     }
 
     public void execute() {
@@ -29,7 +29,7 @@ public class Process implements Cloneable {
     }
 
     public void update() {
-        waitingTime++;
+        totalWaitingTime++;
 
         if (isActive)
             timeFromFirstExecution++;
@@ -49,11 +49,11 @@ public class Process implements Cloneable {
         return processLength;
     }
 
-    public long getWaitingTime() {
-        return waitingTime;
+    public double getTotalWaitingTime() {
+        return totalWaitingTime;
     }
 
-    public long getTimeFromFirstExecution() {
+    public double getTimeFromFirstExecution() {
         return timeFromFirstExecution;
     }
 
@@ -62,22 +62,22 @@ public class Process implements Cloneable {
     }
 
     public int getTimeOfAppearance() {
-        return timeOfAppearance;
+        return timeOfAppearanceInSystem;
     }
 
     public boolean isActive() {
         return isActive;
     }
 
-    public long getFirstActivationTime() {
+    public double getFirstActivationTime() {
         return firstActivationTime;
     }
 
-    public long getTimeToFirstExecution() {
+    public double getTimeToFirstExecution() {
         return timeToFirstExecution;
     }
 
-    public void setFirstActivationTime(long firstActivationTime) {
+    public void setFirstActivationTime(double firstActivationTime) {
         this.firstActivationTime = firstActivationTime;
     }
 
@@ -92,6 +92,6 @@ public class Process implements Cloneable {
 
     @Override
     public String toString() {
-        return String.format("Waiting time: %8d%nTime from first execution: %8d%nProcess time: %8d%nTime to finish: %8d%nTime of appearance: %8d%n%n", waitingTime, timeFromFirstExecution, processLength, remainingTime, timeOfAppearance);
+        return String.format("Waiting time: %8d%nTime from first execution: %8d%nProcess time: %8d%nTime to finish: %8d%nTime of appearance: %8d%n%n", totalWaitingTime, timeFromFirstExecution, processLength, remainingTime, timeOfAppearanceInSystem);
     }
 }

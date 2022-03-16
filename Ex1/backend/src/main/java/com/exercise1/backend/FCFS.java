@@ -1,58 +1,57 @@
 package com.exercise1.backend;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class FCFS {
-    private ArrayList<Process> processes;
+    private List<Process> processes;
 
-    public FCFS(ArrayList<Process> processes) {
+    public FCFS(List<Process> processes) {
         this.processes = processes;
     }
 
     public AlgorithmInformation run() {
-        Queue<Process> activeProcesses = new LinkedList<>();
-        long totalProcesses = processes.size();
-        long timeOfActivity = 0;
-        double sumOfWaitingTime = 0;
+        Queue<Process> alreadyAppearedProcesses = new LinkedList<>();
+        double totalAmountOfProcesses = processes.size();
+        double timeOfSystemActivity = 0;
+        double sumOfTotalWaitingTime = 0;
         double sumOfRunningTime = 0;
-        long numberOfSwitchingOperations = 0;
+        double numberOfSwitchingOperations = 0;
         double sumOfTimeToFirstExecution = 0;
 
-        while (!processes.isEmpty() || !activeProcesses.isEmpty()) {
-            while (!processes.isEmpty() && processes.get(0).getTimeOfAppearance() == timeOfActivity) {
-                activeProcesses.add(processes.get(0));
+        while (!processes.isEmpty() || !alreadyAppearedProcesses.isEmpty()) {
+            while (!processes.isEmpty() && processes.get(0).getTimeOfAppearance() == timeOfSystemActivity) {
+                alreadyAppearedProcesses.add(processes.get(0));
                 processes.remove(0);
             }
 
-            Process currentProcess = activeProcesses.peek();
+            Process currentlyExecutedProcess = alreadyAppearedProcesses.peek();
 
-            if (currentProcess != null) {
-                if (!currentProcess.isActive()) {
-                    currentProcess.setFirstActivationTime(timeOfActivity);
-                }
+            if (currentlyExecutedProcess != null) {
+                if (!currentlyExecutedProcess.isActive())
+                    currentlyExecutedProcess.setFirstActivationTime(timeOfSystemActivity);
 
-                currentProcess.execute();
-                currentProcess.updateCurrent();
+                currentlyExecutedProcess.execute();
+                currentlyExecutedProcess.updateCurrent();
 
-                if (currentProcess.isFinished()) {
-                    sumOfWaitingTime += currentProcess.getWaitingTime();
-                    sumOfRunningTime += currentProcess.getTimeFromFirstExecution();
-                    sumOfTimeToFirstExecution += currentProcess.getTimeToFirstExecution();
+                if (currentlyExecutedProcess.isFinished()) {
+                    sumOfTotalWaitingTime += currentlyExecutedProcess.getTotalWaitingTime();
+                    sumOfRunningTime += currentlyExecutedProcess.getTimeFromFirstExecution();
+                    sumOfTimeToFirstExecution += currentlyExecutedProcess.getTimeToFirstExecution();
                     numberOfSwitchingOperations++;
 
-                    activeProcesses.remove();
+                    alreadyAppearedProcesses.remove();
                 }
             }
 
-            activeProcesses.forEach(pr -> {
-                if (!pr.equals(currentProcess))
+            alreadyAppearedProcesses.forEach(pr -> {
+                if (!pr.equals(currentlyExecutedProcess))
                     pr.update();
             });
-            timeOfActivity++;
+            timeOfSystemActivity++;
         }
 
-        return new AlgorithmInformation("First Come First Serve", sumOfWaitingTime / totalProcesses, sumOfRunningTime / totalProcesses, sumOfTimeToFirstExecution / totalProcesses, numberOfSwitchingOperations);
+        return new AlgorithmInformation("First Come First Serve", sumOfTotalWaitingTime / totalAmountOfProcesses, sumOfRunningTime / totalAmountOfProcesses, sumOfTimeToFirstExecution / totalAmountOfProcesses, numberOfSwitchingOperations);
     }
 }

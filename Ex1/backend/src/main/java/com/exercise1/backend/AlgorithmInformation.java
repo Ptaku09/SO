@@ -5,9 +5,9 @@ public class AlgorithmInformation {
     private double averageWaitingTime;
     private double averageRunningTime;
     private double averageTimeToFirstExecution;
-    private long numberOfSwitchingOperations;
+    private double numberOfSwitchingOperations;
 
-    public AlgorithmInformation(String algorithmName, double averageWaitingTime, double averageRunningTime, double averageTimeToFirstExecution, long numberOfSwitchingOperations) {
+    public AlgorithmInformation(String algorithmName, double averageWaitingTime, double averageRunningTime, double averageTimeToFirstExecution, double numberOfSwitchingOperations) {
         this.algorithmName = algorithmName;
         this.averageWaitingTime = averageWaitingTime;
         this.averageRunningTime = averageRunningTime;
@@ -31,7 +31,7 @@ public class AlgorithmInformation {
         return averageTimeToFirstExecution;
     }
 
-    public long getNumberOfSwitchingOperations() {
+    public double getNumberOfSwitchingOperations() {
         return numberOfSwitchingOperations;
     }
 

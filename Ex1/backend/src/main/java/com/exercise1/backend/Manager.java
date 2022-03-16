@@ -3,24 +3,15 @@ package com.exercise1.backend;
 import com.exercise1.backend.comparators.TimeOfAppearanceComparator;
 
 import java.util.ArrayList;
-
-class Test {
-    public static void main(String[] args) {
-        Manager man = new Manager(3000, 1, 4);
-        man.FCFS();
-        man.SRTF();
-        man.RR(200);
-    }
-}
+import java.util.List;
 
 public class Manager {
-    private ArrayList<Process> processes;
-    private ArrayList<Process> fcfsProcesses = new ArrayList<>();
-    private ArrayList<Process> srtfProcesses = new ArrayList<>();
-    private ArrayList<Process> rrProcesses = new ArrayList<>();
+    private final List<Process> fcfsProcesses = new ArrayList<>();
+    private final List<Process> srtfProcesses = new ArrayList<>();
+    private final List<Process> rrProcesses = new ArrayList<>();
 
     public Manager(int amount, double alpha, double beta) {
-        processes = GenerateProcesses.generateProcesses(amount, alpha, beta);
+        List<Process> processes = GenerateProcesses.generateProcesses(amount, alpha, beta);
         processes.sort(new TimeOfAppearanceComparator());
 
         for (Process pr : processes) {
@@ -29,7 +20,7 @@ public class Manager {
                 srtfProcesses.add((Process) pr.clone());
                 rrProcesses.add((Process) pr.clone());
             } catch (Exception e) {
-                System.out.println("sth");
+                System.out.println("Something went wrong!");
             }
         }
     }

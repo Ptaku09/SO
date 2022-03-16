@@ -107,7 +107,7 @@ export default function Exercise1() {
                     <div key={result.algorithmName} className="mb-3 mt-4 md:mt-0">
                       <p className="text-lg text-sky-700 text-center">& {result.algorithmName} &</p>
                       <p>Average time from start to end: {Math.round(result.averageRunningTime * 100) / 100}</p>
-                      <p>Average time to first execution: {Math.round(result.averageTimeToFirstExecution * 100) / 100}</p>
+                      <p>Average time to start: {Math.round(result.averageTimeToFirstExecution * 100) / 100}</p>
                       <p>Average total waiting time: {Math.round(result.averageWaitingTime * 100) / 100}</p>
                       <p className="border-b-[1px] border-b-black pb-2">Number of switching operations: {result.numberOfSwitchingOperations}</p>
                     </div>
