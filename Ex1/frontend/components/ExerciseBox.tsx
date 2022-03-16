@@ -16,7 +16,7 @@ export default function ExerciseBox({ number, desc, link }: Props) {
       <Link href={link}>
         <a
           onClick={() => sessionStorage.setItem('current-exercise', `exercise${number}`)}
-          className="absolute bottom-5 shadow-lg border-[1px] border-black px-5 py-2 bg-gradient-to-r from-white to-sky-400 bg-200% bg-left hover:bg-right transition-all duration-[400ms] ease-linear"
+          className="absolute bottom-5 rounded-xl shadow-lg px-5 py-2 bg-gradient-to-r from-white to-sky-400 bg-200% bg-left hover:bg-right transition-all duration-[400ms] ease-linear"
         >
           Check it out!
         </a>

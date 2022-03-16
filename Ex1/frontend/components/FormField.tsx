@@ -7,9 +7,11 @@ type Props = {
   value: number | undefined;
   maxLength: number;
   onChange: ChangeEventHandler<HTMLInputElement>;
+  min: number;
+  max: number;
 };
 
-export default function FormField({ label, id, type, value, maxLength, onChange }: Props) {
+export default function FormField({ label, id, type, value, maxLength, onChange, min, max }: Props) {
   return (
     <>
       <label className="text-[0.75rem] ml-5 w-full" htmlFor={id}>
@@ -23,6 +25,8 @@ export default function FormField({ label, id, type, value, maxLength, onChange 
         value={value}
         maxLength={maxLength}
         onChange={onChange}
+        min={min}
+        max={max}
         required
       />
     </>

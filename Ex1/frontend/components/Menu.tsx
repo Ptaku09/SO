@@ -45,7 +45,7 @@ export default function Menu() {
             <br /> projects!
           </h1>
           <form className="text-xl">
-            <div className="flex flex-col justify-between gap-8">
+            <div className="flex flex-col items-center justify-between gap-8">
               {['exercise1', 'exercise2', 'exercise3', 'exercise4', 'exercise5'].map((id: string) => {
                 return (
                   <div key={id}>
@@ -61,7 +61,7 @@ export default function Menu() {
                     />
                     <label
                       htmlFor={id}
-                      className="inline relative overflow-hidden after:absolute after:-z-[1] after:right-0 after:w-0 after:-bottom-[5px] after:bg-white after:h-[2px] after:transition-all after:duration-300 after:ease-out hover:after:left-0 hover:after:right-auto hover:after:w-full cursor-pointer peer-checked:after:w-full"
+                      className="inline relative overflow-hidden after:absolute after:-z-[1] after:right-0 after:w-0 after:-bottom-[5px] after:bg-white after:h-[2px] after:transition-all after:duration-300 after:ease-out hover:after:left-0 hover:after:right-auto hover:after:w-full cursor-pointer peer-checked:after:w-full peer-checked:after:bg-sky-400 peer-checked:text-sky-400"
                     >
                       <Link href={`/${id !== 'exercise1' ? '#' : id}`}>
                         <a>Exercise #{id[id.length - 1]}</a>
@@ -74,7 +74,7 @@ export default function Menu() {
                 <Link href="/">
                   <a
                     onClick={handleMenuOpen}
-                    className="inline relative overflow-hidden after:absolute after:-z-[1] after:right-0 after:w-0 after:-bottom-[5px] after:bg-sky-700 after:h-[2px] after:transition-all after:duration-300 after:ease-out hover:after:left-0 hover:after:right-auto hover:after:w-full cursor-pointer peer-checked:after:w-full"
+                    className="inline relative overflow-hidden border-[1px] p-2 after:absolute after:-z-[1] after:right-0 after:w-0 after:-bottom-[5px] after:bg-white after:h-[2px] after:transition-all after:duration-300 after:ease-out hover:after:left-0 hover:after:right-auto hover:after:w-full cursor-pointer peer-checked:after:w-full"
                   >
                     Main Menu
                   </a>
