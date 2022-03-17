@@ -1,18 +1,19 @@
-package com.exercise1.backend;
+package com.backend.exercise1;
 
-import java.util.LinkedList;
+import com.backend.exercise1.comparators.RemainingTimeComparator;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
-public class FCFS {
+public class SRTF {
     private List<Process> processes;
 
-    public FCFS(List<Process> processes) {
+    public SRTF(List<Process> processes) {
         this.processes = processes;
     }
 
     public AlgorithmInformation run() {
-        Queue<Process> alreadyAppearedProcesses = new LinkedList<>();
+        List<Process> alreadyAppearedProcesses = new ArrayList<>();
         double totalAmountOfProcesses = processes.size();
         double timeOfSystemActivity = 0;
         double sumOfTotalWaitingTime = 0;
@@ -21,12 +22,24 @@ public class FCFS {
         double sumOfTimeToFirstExecution = 0;
 
         while (!processes.isEmpty() || !alreadyAppearedProcesses.isEmpty()) {
+            List<Integer> recentlyAddedProcessesIds = new ArrayList<>();
+
             while (!processes.isEmpty() && processes.get(0).getTimeOfAppearance() == timeOfSystemActivity) {
                 alreadyAppearedProcesses.add(processes.get(0));
+                recentlyAddedProcessesIds.add(processes.get(0).getId());
+                alreadyAppearedProcesses.sort(new RemainingTimeComparator());
+
                 processes.remove(0);
             }
 
-            Process currentlyExecutedProcess = alreadyAppearedProcesses.peek();
+            Process currentlyExecutedProcess = null;
+
+            if (!alreadyAppearedProcesses.isEmpty()) {
+                currentlyExecutedProcess = alreadyAppearedProcesses.get(0);
+
+                if (recentlyAddedProcessesIds.contains(currentlyExecutedProcess.getId()))
+                    numberOfSwitchingOperations++;
+            }
 
             if (currentlyExecutedProcess != null) {
                 if (!currentlyExecutedProcess.isActive())
@@ -41,17 +54,18 @@ public class FCFS {
                     sumOfTimeToFirstExecution += currentlyExecutedProcess.getTimeToFirstExecution();
                     numberOfSwitchingOperations++;
 
-                    alreadyAppearedProcesses.remove();
+                    alreadyAppearedProcesses.remove(0);
                 }
             }
 
+            Process finalCurrentlyExecutedProcess = currentlyExecutedProcess;
             alreadyAppearedProcesses.forEach(pr -> {
-                if (!pr.equals(currentlyExecutedProcess))
+                if (!pr.equals(finalCurrentlyExecutedProcess))
                     pr.update();
             });
             timeOfSystemActivity++;
         }
 
-        return new AlgorithmInformation("First Come First Serve", sumOfTotalWaitingTime / totalAmountOfProcesses, sumOfRunningTime / totalAmountOfProcesses, sumOfTimeToFirstExecution / totalAmountOfProcesses, numberOfSwitchingOperations);
+        return new AlgorithmInformation("Shortest Remaining Time First", sumOfTotalWaitingTime / totalAmountOfProcesses, sumOfRunningTime / totalAmountOfProcesses, sumOfTimeToFirstExecution / totalAmountOfProcesses, numberOfSwitchingOperations);
     }
 }

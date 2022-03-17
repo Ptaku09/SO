@@ -1,6 +1,6 @@
-package com.exercise1.backend;
+package com.backend.exercise1;
 
-import com.exercise1.backend.comparators.TimeOfAppearanceComparator;
+import com.backend.exercise1.comparators.TimeOfAppearanceComparator;
 
 import java.util.ArrayList;
 import java.util.List;

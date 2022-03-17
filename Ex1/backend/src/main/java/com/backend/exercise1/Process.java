@@ -1,4 +1,4 @@
-package com.exercise1.backend;
+package com.backend.exercise1;
 
 public class Process implements Cloneable {
     private final int id;

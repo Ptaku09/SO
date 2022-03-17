@@ -1,4 +1,4 @@
-package com.exercise1.backend;
+package com.backend.exercise1;
 
 import org.apache.commons.math3.distribution.BetaDistribution;
 

@@ -1,5 +1,7 @@
-package com.exercise1.backend;
+package com.backend.controllers;
 
+import com.backend.exercise1.AlgorithmInformation;
+import com.backend.exercise1.Manager;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;

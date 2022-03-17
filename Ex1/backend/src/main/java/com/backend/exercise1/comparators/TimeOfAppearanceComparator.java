@@ -1,6 +1,6 @@
-package com.exercise1.backend.comparators;
+package com.backend.exercise1.comparators;
 
-import com.exercise1.backend.Process;
+import com.backend.exercise1.Process;
 
 import java.util.Comparator;
 
