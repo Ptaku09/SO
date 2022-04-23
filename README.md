@@ -2,7 +2,7 @@
 
 ```bash
 ├── frontend
-│   └── all frontend staff
+│   └── all frontend stuff
 └── backend
     └── src
         └── main
