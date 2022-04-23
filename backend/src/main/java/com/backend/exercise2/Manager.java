@@ -42,9 +42,9 @@ public class Manager {
 
     public List<Results> runSimulation() {
         List<Results> results = new ArrayList<>();
-        FCFS fcfs = new FCFS(driveSize, initialHeadPosition, fcfsProcesses);
 
-        results.add(fcfs.run());
+        results.add(new FCFS(driveSize, initialHeadPosition, fcfsProcesses).run());
+        results.add(new SSTF(driveSize, initialHeadPosition, sstfProcesses).run());
         return results;
     }
 

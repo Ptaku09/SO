@@ -1,17 +1,17 @@
 package com.backend.exercise2;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Queue;
 
-public class FCFS extends Algorithm {
-    public FCFS(int driveSize, int initialHeadPosition, List<Process> processes) {
+public class SSTF extends Algorithm {
+    public SSTF(int driveSize, int initialHeadPosition, List<Process> processes) {
         super(driveSize, initialHeadPosition, processes);
     }
 
     @Override
     public Results run() {
-        Queue<Process> queue = new LinkedList<>();
+        List<Process> queue = new ArrayList<>();
         double amountOfProcesses = processes.size();
         double sumOfWaitingTime = 0;
         double currentTime = 0;
@@ -22,16 +22,21 @@ public class FCFS extends Algorithm {
         while (!processes.isEmpty() || !queue.isEmpty()) {
             while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime) {
                 queue.add(processes.remove(0));
+
+                if (queue.size() > 1) {
+                    int finalCurrentHeadPosition = currentHeadPosition;
+                    queue.subList(1, queue.size()).sort(Comparator.comparingInt(p -> Math.abs(p.getInitialIndex() - finalCurrentHeadPosition)));
+                }
             }
 
             if (currentProcess == null && !queue.isEmpty()) {
-                currentProcess = queue.peek();
+                currentProcess = queue.get(0);
             }
 
             if (currentProcess != null && currentProcess.getInitialIndex() == currentHeadPosition) {
-                queue.remove();
+                queue.remove(0);
                 sumOfWaitingTime += currentProcess.getWaitingTime();
-                currentProcess = (queue.isEmpty() ? null : queue.peek());
+                currentProcess = (queue.isEmpty() ? null : queue.get(0));
             }
 
             if (currentProcess != null) {
@@ -43,6 +48,6 @@ public class FCFS extends Algorithm {
             currentTime++;
         }
 
-        return new Results("FCFS", way, 0, 0, 0, sumOfWaitingTime / amountOfProcesses);
+        return new Results("SSTF", way, 0, 0, 0, sumOfWaitingTime / amountOfProcesses);
     }
 }
