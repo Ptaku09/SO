@@ -45,6 +45,7 @@ public class Manager {
 
         results.add(new FCFS(driveSize, initialHeadPosition, fcfsProcesses).run());
         results.add(new SSTF(driveSize, initialHeadPosition, sstfProcesses).run());
+        results.add(new SCAN(driveSize, initialHeadPosition, scanProcesses).run());
         return results;
     }
 

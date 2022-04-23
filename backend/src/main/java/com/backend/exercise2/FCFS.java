@@ -28,7 +28,7 @@ public class FCFS extends Algorithm {
                 currentProcess = queue.peek();
             }
 
-            if (currentProcess != null && currentProcess.getInitialIndex() == currentHeadPosition) {
+            while (currentProcess != null && currentProcess.getInitialIndex() == currentHeadPosition) {
                 queue.remove();
                 sumOfWaitingTime += currentProcess.getWaitingTime();
                 currentProcess = (queue.isEmpty() ? null : queue.peek());

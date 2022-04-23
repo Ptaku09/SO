@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class SSTF extends Algorithm {
-    public SSTF(int driveSize, int initialHeadPosition, List<Process> processes) {
+public class SCAN extends Algorithm {
+    public SCAN(int driveSize, int initialHeadPosition, List<Process> processes) {
         super(driveSize, initialHeadPosition, processes);
     }
 
@@ -16,16 +16,20 @@ public class SSTF extends Algorithm {
         double sumOfWaitingTime = 0;
         double currentTime = 0;
         double way = 0;
-        int currentHeadPosition = initialHeadPosition;
+        int currentHeadPosition = 0;
+        boolean isGoingToRight = true;
         Process currentProcess = null;
 
         while (!processes.isEmpty() || !queue.isEmpty()) {
             while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime) {
                 queue.add(processes.remove(0));
 
-                if (queue.size() > 1) {
+                if (isGoingToRight) {
                     int finalCurrentHeadPosition = currentHeadPosition;
-                    queue.subList(1, queue.size()).sort(Comparator.comparingInt(p -> Math.abs(p.getInitialIndex() - finalCurrentHeadPosition)));
+                    queue.sort(Comparator.comparingInt(p -> p.getInitialIndex() >= finalCurrentHeadPosition ? Math.abs(p.getInitialIndex() - finalCurrentHeadPosition) : 2000));
+                } else {
+                    int finalCurrentHeadPosition = currentHeadPosition;
+                    queue.sort(Comparator.comparingInt(p -> p.getInitialIndex() <= finalCurrentHeadPosition ? Math.abs(p.getInitialIndex() - finalCurrentHeadPosition) : 2000));
                 }
             }
 
@@ -39,15 +43,23 @@ public class SSTF extends Algorithm {
                 currentProcess = (queue.isEmpty() ? null : queue.get(0));
             }
 
-            if (currentProcess != null) {
-                currentHeadPosition += Integer.compare(currentProcess.getInitialIndex(), currentHeadPosition);
-                way++;
+            if (isGoingToRight) {
+                currentHeadPosition++;
+
+                if (currentHeadPosition == driveSize)
+                    isGoingToRight = false;
+            } else {
+                currentHeadPosition--;
+
+                if (currentHeadPosition == 0)
+                    isGoingToRight = true;
             }
 
+            way++;
             queue.forEach(Process::update);
             currentTime++;
         }
 
-        return new Results("SSTF", way, 0, 0, 0, sumOfWaitingTime / amountOfProcesses);
+        return new Results("SCAN", way, 0, 0, 0, sumOfWaitingTime / amountOfProcesses);
     }
 }
