@@ -23,14 +23,14 @@ public class SCAN extends Algorithm {
         while (!processes.isEmpty() || !queue.isEmpty()) {
             while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime) {
                 queue.add(processes.remove(0));
+            }
 
-                if (isGoingToRight) {
-                    int finalCurrentHeadPosition = currentHeadPosition;
-                    queue.sort(Comparator.comparingInt(p -> p.getInitialIndex() >= finalCurrentHeadPosition ? Math.abs(p.getInitialIndex() - finalCurrentHeadPosition) : 2000));
-                } else {
-                    int finalCurrentHeadPosition = currentHeadPosition;
-                    queue.sort(Comparator.comparingInt(p -> p.getInitialIndex() <= finalCurrentHeadPosition ? Math.abs(p.getInitialIndex() - finalCurrentHeadPosition) : 2000));
-                }
+            if (isGoingToRight) {
+                int finalCurrentHeadPosition = currentHeadPosition;
+                queue.sort(Comparator.comparingInt(p -> p.getInitialIndex() >= finalCurrentHeadPosition ? p.getInitialIndex() - finalCurrentHeadPosition : driveSize + 1));
+            } else {
+                int finalCurrentHeadPosition = currentHeadPosition;
+                queue.sort(Comparator.comparingInt(p -> p.getInitialIndex() <= finalCurrentHeadPosition ? Math.abs(p.getInitialIndex() - finalCurrentHeadPosition) : driveSize + 1));
             }
 
             if (currentProcess == null && !queue.isEmpty()) {
@@ -60,6 +60,6 @@ public class SCAN extends Algorithm {
             currentTime++;
         }
 
-        return new Results("SCAN", way, 0, 0, 0, sumOfWaitingTime / amountOfProcesses);
+        return new Results("SCAN", way, 0, -1, -1, sumOfWaitingTime / amountOfProcesses);
     }
 }

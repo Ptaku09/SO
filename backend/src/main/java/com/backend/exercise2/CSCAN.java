@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class SSTF extends Algorithm {
-    public SSTF(int driveSize, int initialHeadPosition, List<Process> processes) {
+public class CSCAN extends Algorithm {
+    public CSCAN(int driveSize, int initialHeadPosition, List<Process> processes) {
         super(driveSize, initialHeadPosition, processes);
     }
 
@@ -16,18 +16,17 @@ public class SSTF extends Algorithm {
         double sumOfWaitingTime = 0;
         double currentTime = 0;
         double way = 0;
-        int currentHeadPosition = initialHeadPosition;
+        int displacements = 0;
+        int currentHeadPosition = 0;
         Process currentProcess = null;
 
         while (!processes.isEmpty() || !queue.isEmpty()) {
             while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime) {
                 queue.add(processes.remove(0));
-
-                if (queue.size() > 1) {
-                    int finalCurrentHeadPosition = currentHeadPosition;
-                    queue.subList(1, queue.size()).sort(Comparator.comparingInt(p -> Math.abs(p.getInitialIndex() - finalCurrentHeadPosition)));
-                }
             }
+
+            int finalCurrentHeadPosition = currentHeadPosition;
+            queue.sort(Comparator.comparingInt(p -> p.getInitialIndex() >= finalCurrentHeadPosition ? p.getInitialIndex() - finalCurrentHeadPosition : driveSize + 1));
 
             if (currentProcess == null && !queue.isEmpty()) {
                 currentProcess = queue.get(0);
@@ -39,15 +38,16 @@ public class SSTF extends Algorithm {
                 currentProcess = (queue.isEmpty() ? null : queue.get(0));
             }
 
-            if (currentProcess != null) {
-                currentHeadPosition += Integer.compare(currentProcess.getInitialIndex(), currentHeadPosition);
-                way++;
-            }
+            currentHeadPosition = (currentHeadPosition + 1) % driveSize;
 
+            if (currentHeadPosition == 0)
+                displacements++;
+
+            way++;
             queue.forEach(Process::update);
             currentTime++;
         }
 
-        return new Results("SSTF", way, 0, -1, -1, sumOfWaitingTime / amountOfProcesses);
+        return new Results("C-SCAN", way, displacements, -1, -1, sumOfWaitingTime / amountOfProcesses);
     }
 }
