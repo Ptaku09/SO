@@ -5,6 +5,10 @@ export type InitialStateTypes = {
   rrExecTime?: number;
   alpha?: number;
   beta?: number;
+  amountOfProcesses?: number;
+  hardDriveCapacity?: number;
+  initialHeadPosition?: number;
+  realTimeChance?: number;
 };
 
 const useForm = (initialState: InitialStateTypes) => {

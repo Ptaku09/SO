@@ -24,8 +24,8 @@ const Home: NextPage = () => {
               link: '/exercise1',
             },
             {
-              desc: 'unknown',
-              link: '#',
+              desc: 'Hard drive 💾',
+              link: '/exercise2',
             },
             {
               desc: 'unknown',
