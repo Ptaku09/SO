@@ -18,12 +18,10 @@ public class SCAN extends Algorithm {
         double way = 0;
         int currentHeadPosition = 0;
         boolean isGoingToRight = true;
-        Process currentProcess = null;
 
         while (!processes.isEmpty() || !queue.isEmpty()) {
-            while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime) {
+            while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime)
                 queue.add(processes.remove(0));
-            }
 
             if (isGoingToRight) {
                 int finalCurrentHeadPosition = currentHeadPosition;
@@ -33,14 +31,9 @@ public class SCAN extends Algorithm {
                 queue.sort(Comparator.comparingInt(p -> p.getInitialIndex() <= finalCurrentHeadPosition ? Math.abs(p.getInitialIndex() - finalCurrentHeadPosition) : driveSize + 1));
             }
 
-            if (currentProcess == null && !queue.isEmpty()) {
-                currentProcess = queue.get(0);
-            }
-
-            while (currentProcess != null && currentProcess.getInitialIndex() == currentHeadPosition) {
+            while (!queue.isEmpty() && queue.get(0).getInitialIndex() == currentHeadPosition) {
+                sumOfWaitingTime += queue.get(0).getWaitingTime();
                 queue.remove(0);
-                sumOfWaitingTime += currentProcess.getWaitingTime();
-                currentProcess = (queue.isEmpty() ? null : queue.get(0));
             }
 
             if (isGoingToRight) {

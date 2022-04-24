@@ -17,7 +17,6 @@ public class SSTF extends Algorithm {
         double currentTime = 0;
         double way = 0;
         int currentHeadPosition = initialHeadPosition;
-        Process currentProcess = null;
 
         while (!processes.isEmpty() || !queue.isEmpty()) {
             while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime) {
@@ -29,18 +28,13 @@ public class SSTF extends Algorithm {
                 }
             }
 
-            if (currentProcess == null && !queue.isEmpty()) {
-                currentProcess = queue.get(0);
-            }
-
-            while (currentProcess != null && currentProcess.getInitialIndex() == currentHeadPosition) {
+            while (!queue.isEmpty() && queue.get(0).getInitialIndex() == currentHeadPosition) {
+                sumOfWaitingTime += queue.get(0).getWaitingTime();
                 queue.remove(0);
-                sumOfWaitingTime += currentProcess.getWaitingTime();
-                currentProcess = (queue.isEmpty() ? null : queue.get(0));
             }
 
-            if (currentProcess != null) {
-                currentHeadPosition += Integer.compare(currentProcess.getInitialIndex(), currentHeadPosition);
+            if (!queue.isEmpty()) {
+                currentHeadPosition += Integer.compare(queue.get(0).getInitialIndex(), currentHeadPosition);
                 way++;
             }
 

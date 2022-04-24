@@ -17,25 +17,18 @@ public class FCFS extends Algorithm {
         double currentTime = 0;
         double way = 0;
         int currentHeadPosition = initialHeadPosition;
-        Process currentProcess = null;
 
         while (!processes.isEmpty() || !queue.isEmpty()) {
-            while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime) {
+            while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime)
                 queue.add(processes.remove(0));
-            }
 
-            if (currentProcess == null && !queue.isEmpty()) {
-                currentProcess = queue.peek();
-            }
-
-            while (currentProcess != null && currentProcess.getInitialIndex() == currentHeadPosition) {
+            while (!queue.isEmpty() && queue.peek().getInitialIndex() == currentHeadPosition) {
+                sumOfWaitingTime += queue.element().getWaitingTime();
                 queue.remove();
-                sumOfWaitingTime += currentProcess.getWaitingTime();
-                currentProcess = (queue.isEmpty() ? null : queue.peek());
             }
 
-            if (currentProcess != null) {
-                currentHeadPosition += Integer.compare(currentProcess.getInitialIndex(), currentHeadPosition);
+            if (!queue.isEmpty()) {
+                currentHeadPosition += Integer.compare(queue.peek().getInitialIndex(), currentHeadPosition);
                 way++;
             }
 

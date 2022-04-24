@@ -15,11 +15,6 @@ public class Manager {
     private final List<Process> edfProcesses = new ArrayList<>();
     private final List<Process> fdscanProcesses = new ArrayList<>();
 
-    public static void main(String[] args) {
-        Manager manager = new Manager(100, 100, 0, 0.0);
-        List<Results> results = manager.runSimulation();
-    }
-
     public Manager(int amount, int driveSize, int initialHeadPosition, double realTimeChance) {
         this.driveSize = driveSize;
         this.initialHeadPosition = initialHeadPosition % driveSize;
