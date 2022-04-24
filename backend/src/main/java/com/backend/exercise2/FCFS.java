@@ -43,6 +43,6 @@ public class FCFS extends Algorithm {
             currentTime++;
         }
 
-        return new Results("FCFS", way, 0, -1, -1, sumOfWaitingTime / amountOfProcesses);
+        return new Results("FCFS", way, -1, -1, -1, sumOfWaitingTime / amountOfProcesses);
     }
 }

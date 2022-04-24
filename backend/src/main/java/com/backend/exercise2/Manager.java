@@ -16,7 +16,7 @@ public class Manager {
     private final List<Process> fdscanProcesses = new ArrayList<>();
 
     public static void main(String[] args) {
-        Manager manager = new Manager(5, 100, 0, 0.0);
+        Manager manager = new Manager(100, 100, 0, 30.0);
         List<Results> results = manager.runSimulation();
     }
 
@@ -24,7 +24,7 @@ public class Manager {
         this.driveSize = driveSize;
         this.initialHeadPosition = initialHeadPosition % driveSize;
 
-        List<Process> processes = generateProcesses(amount, driveSize, realTimeChance);
+        List<Process> processes = generateProcesses(amount, driveSize, realTimeChance % 101);
         processes.sort(Comparator.comparing(Process::getInitialTime));
 
         for (Process process : processes)
@@ -47,6 +47,7 @@ public class Manager {
         results.add(new SSTF(driveSize, initialHeadPosition, sstfProcesses).run());
         results.add(new SCAN(driveSize, initialHeadPosition, scanProcesses).run());
         results.add(new CSCAN(driveSize, initialHeadPosition, cscanProcesses).run());
+        results.add(new EDF(driveSize, initialHeadPosition, edfProcesses).run());
         return results;
     }
 
@@ -55,7 +56,7 @@ public class Manager {
         Random random = new Random();
 
         for (int i = 0; i < amount; i++)
-            processes.add(new Process(random.nextInt(1, 1000), random.nextInt(1, driveSize), random.nextDouble() % 100 < realTimeChance, random.nextInt(1, driveSize / 3)));
+            processes.add(new Process(random.nextInt(1, 1000), random.nextInt(1, driveSize), random.nextDouble(0, 100) <= realTimeChance, random.nextInt(1, driveSize / 3)));
 
         return processes;
     }

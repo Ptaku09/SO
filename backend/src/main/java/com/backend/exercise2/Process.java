@@ -1,9 +1,10 @@
 package com.backend.exercise2;
 
 public class Process implements Cloneable {
-    private int initialTime;
-    private int initialIndex;
-    private boolean realTime;
+    private final int initialDeadLine;
+    private final int initialTime;
+    private final int initialIndex;
+    private final boolean realTime;
     private int deadLine;
     private double waitingTime = 0;
 
@@ -12,42 +13,36 @@ public class Process implements Cloneable {
         this.initialIndex = initialIndex;
         this.realTime = realTime;
         this.deadLine = deadLine;
+        this.initialDeadLine = deadLine;
     }
 
     public void update() {
         this.waitingTime++;
     }
 
-    public int getInitialTime() {
-        return initialTime;
+    public void updateRealTime() {
+        this.waitingTime++;
+        this.deadLine--;
     }
 
-    public void setInitialTime(int initialTime) {
-        this.initialTime = initialTime;
+    public int getInitialDeadLine() {
+        return initialDeadLine;
+    }
+
+    public int getInitialTime() {
+        return initialTime;
     }
 
     public int getInitialIndex() {
         return initialIndex;
     }
 
-    public void setInitialIndex(int initialIndex) {
-        this.initialIndex = initialIndex;
-    }
-
     public boolean isRealTime() {
         return realTime;
     }
 
-    public void setRealTime(boolean realTime) {
-        this.realTime = realTime;
-    }
-
     public int getDeadLine() {
         return deadLine;
-    }
-
-    public void setDeadLine(int deadLine) {
-        this.deadLine = deadLine;
     }
 
     public double getWaitingTime() {

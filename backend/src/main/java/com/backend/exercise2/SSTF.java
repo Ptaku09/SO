@@ -48,6 +48,6 @@ public class SSTF extends Algorithm {
             currentTime++;
         }
 
-        return new Results("SSTF", way, 0, -1, -1, sumOfWaitingTime / amountOfProcesses);
+        return new Results("SSTF", way, -1, -1, -1, sumOfWaitingTime / amountOfProcesses);
     }
 }
