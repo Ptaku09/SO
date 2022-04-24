@@ -20,7 +20,7 @@ public class EDF extends Algorithm {
         int currentHeadPosition = initialHeadPosition;
         Process currentProcess = null;
 
-        while (!processes.isEmpty() || !queue.isEmpty()) {
+        while (!processes.isEmpty() || !queue.isEmpty() || !priorityQueue.isEmpty()) {
             while (!processes.isEmpty() && processes.get(0).getInitialTime() == currentTime) {
                 Process process = processes.remove(0);
 

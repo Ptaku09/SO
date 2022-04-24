@@ -16,7 +16,7 @@ public class Manager {
     private final List<Process> fdscanProcesses = new ArrayList<>();
 
     public static void main(String[] args) {
-        Manager manager = new Manager(100, 100, 0, 30.0);
+        Manager manager = new Manager(100, 100, 0, 0.0);
         List<Results> results = manager.runSimulation();
     }
 
@@ -48,6 +48,7 @@ public class Manager {
         results.add(new SCAN(driveSize, initialHeadPosition, scanProcesses).run());
         results.add(new CSCAN(driveSize, initialHeadPosition, cscanProcesses).run());
         results.add(new EDF(driveSize, initialHeadPosition, edfProcesses).run());
+        results.add(new FDSCAN(driveSize, initialHeadPosition, fdscanProcesses).run());
         return results;
     }
 
