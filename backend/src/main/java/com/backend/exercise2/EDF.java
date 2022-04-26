@@ -38,7 +38,7 @@ public class EDF extends Algorithm {
                     priorityQueue.remove(0);
                 }
 
-                currentProcess = !priorityQueue.isEmpty() ? priorityQueue.get(0) : null;
+                currentProcess = !priorityQueue.isEmpty() ? priorityQueue.get(0) : !queue.isEmpty() ? queue.peek() : null;
             } else if (currentProcess == null && !queue.isEmpty()) {
                 currentProcess = queue.peek();
             }
