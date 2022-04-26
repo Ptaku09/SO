@@ -19,20 +19,7 @@ public class Manager {
         this.driveCapacity = driveCapacity;
         this.initialHeadPosition = initialHeadPosition % driveCapacity;
 
-        List<Process> processes = generateProcesses(amount, driveCapacity, realTimeChance % 101);
-        processes.sort(Comparator.comparing(Process::getInitialTime));
-
-        for (Process process : processes)
-            try {
-                fcfsProcesses.add(process.clone());
-                sstfProcesses.add(process.clone());
-                scanProcesses.add(process.clone());
-                cscanProcesses.add(process.clone());
-                edfProcesses.add(process.clone());
-                fdscanProcesses.add(process.clone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
+        assignProcessesToLists(amount, driveCapacity, realTimeChance);
     }
 
     public List<Results> runSimulation() {
@@ -47,13 +34,32 @@ public class Manager {
         return results;
     }
 
-    private static List<Process> generateProcesses(int amount, int driveCapacity, double realTimeChance) {
+    private void assignProcessesToLists(int amount, int driveCapacity, double realTimeChance) {
+        cloneProcesses(generateProcesses(amount, driveCapacity, realTimeChance % 101));
+    }
+
+    private void cloneProcesses(List<Process> processes) {
+        for (Process process : processes)
+            try {
+                fcfsProcesses.add(process.clone());
+                sstfProcesses.add(process.clone());
+                scanProcesses.add(process.clone());
+                cscanProcesses.add(process.clone());
+                edfProcesses.add(process.clone());
+                fdscanProcesses.add(process.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+    }
+
+    private List<Process> generateProcesses(int amount, int driveCapacity, double realTimeChance) {
         List<Process> processes = new ArrayList<>();
         Random random = new Random();
 
         for (int i = 0; i < amount; i++)
             processes.add(new Process(random.nextInt(1, 1000), random.nextInt(1, driveCapacity), random.nextDouble(0, 100) <= realTimeChance, random.nextInt(1, driveCapacity / 3)));
 
+        processes.sort(Comparator.comparing(Process::getInitialTime));
         return processes;
     }
 }
