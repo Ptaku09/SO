@@ -60,10 +60,8 @@ public class FCFS extends Algorithm {
     }
 
     private void updateTimeInPhysicalMemory() {
-        for (int i = 0; i < timeInPhysicalMemory.length; i++) {
-            if (physicalMemory[i] != -1) {
+        for (int i = 0; i < timeInPhysicalMemory.length; i++)
+            if (physicalMemory[i] != -1)
                 timeInPhysicalMemory[i]++;
-            }
-        }
     }
 }

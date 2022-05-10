@@ -22,7 +22,8 @@ public class Manager {
     public List<Results> runSimulation() {
         List<Results> results = new ArrayList<>();
 
-        results.add(new FCFS(virtualMemorySize, physicalMemorySize, testSequence).run());
+        results.add(new FCFS(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
+        results.add(new OPT(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
 
         return results;
     }
