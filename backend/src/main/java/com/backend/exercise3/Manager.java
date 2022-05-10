@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Manager {
+    private final static int[] BASE_TEST_SEQUENCE = new int[]{0, 1, 2, 3, 0, 1, 4, 0, 1, 2, 3, 4};
     private final static int BACKUP_VIRTUAL_MEM_SIZE = 12;
     private final static int BACKUP_RAM_SIZE = 10;
     private final int virtualMemorySize;
@@ -20,6 +21,8 @@ public class Manager {
 
     public List<Results> runSimulation() {
         List<Results> results = new ArrayList<>();
+
+        results.add(new FCFS(virtualMemorySize, physicalMemorySize, testSequence).run());
 
         return results;
     }
