@@ -24,6 +24,7 @@ public class Manager {
 
         results.add(new FCFS(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
         results.add(new OPT(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
+        results.add(new LRU(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
 
         return results;
     }
