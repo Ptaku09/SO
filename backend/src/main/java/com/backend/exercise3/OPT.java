@@ -29,7 +29,7 @@ public class OPT extends Algorithm {
                 updatePhysicalMemory(testSequence[i], i);
             }
 
-            updateTimeInPhysicalMemory();
+            updateNextRequestIn();
         }
 
         return new Results("OPT", errors);
@@ -74,7 +74,7 @@ public class OPT extends Algorithm {
         return -1;
     }
 
-    private void updateTimeInPhysicalMemory() {
+    private void updateNextRequestIn() {
         for (int i = 0; i < nextRequestIn.length; i++)
             if (nextRequestIn[i] != -1)
                 nextRequestIn[i]--;
