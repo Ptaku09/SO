@@ -22,11 +22,11 @@ public class Manager {
     public List<Results> runSimulation() {
         List<Results> results = new ArrayList<>();
 
-        results.add(new FCFS(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
-        results.add(new OPT(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
-        results.add(new LRU(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
-        results.add(new ALRU(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
-        results.add(new RAND(virtualMemorySize, physicalMemorySize, BASE_TEST_SEQUENCE).run());
+        results.add(new FCFS(virtualMemorySize, physicalMemorySize, testSequence).run());
+        results.add(new OPT(virtualMemorySize, physicalMemorySize, testSequence).run());
+        results.add(new LRU(virtualMemorySize, physicalMemorySize, testSequence).run());
+        results.add(new ALRU(virtualMemorySize, physicalMemorySize, testSequence).run());
+        results.add(new RAND(virtualMemorySize, physicalMemorySize, testSequence).run());
 
         return results;
     }
@@ -35,7 +35,7 @@ public class Manager {
         if (physicalMemorySize <= 0 || virtualMemorySize <= 0)
             return new int[]{BACKUP_VIRTUAL_MEM_SIZE, BACKUP_RAM_SIZE};
         else if (physicalMemorySize > virtualMemorySize)
-            return new int[]{virtualMemorySize + 1, physicalMemorySize};
+            return new int[]{physicalMemorySize + 1, physicalMemorySize};
 
         return new int[]{virtualMemorySize, physicalMemorySize};
     }
