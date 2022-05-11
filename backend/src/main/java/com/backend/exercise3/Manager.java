@@ -6,8 +6,8 @@ import java.util.Random;
 
 public class Manager {
     private final static int[] BASE_TEST_SEQUENCE = new int[]{0, 1, 2, 3, 0, 1, 4, 2, 1, 0, 3, 4};
-    private final static int BACKUP_VIRTUAL_MEM_SIZE = 12;
-    private final static int BACKUP_RAM_SIZE = 10;
+    private final static int BACKUP_VIRTUAL_MEM_SIZE = 40;
+    private final static int BACKUP_RAM_SIZE = 8;
     private final int virtualMemorySize;
     private final int physicalMemorySize;
     private int[] testSequence;
