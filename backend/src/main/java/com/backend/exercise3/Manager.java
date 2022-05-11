@@ -46,16 +46,50 @@ public class Manager {
             return;
         }
 
-        Random random = new Random();
         this.testSequence = new int[testSequenceLength];
+        Random random = new Random();
+        int i = 0;
 
-        for (int i = 0; i < testSequenceLength; i++) {
-            int number = random.nextInt(0, virtualMemorySize);
-            testSequence[i] = validateGeneratedNumber(number, i != 0 ? testSequence[i - 1] : -1);
+        while (i < testSequenceLength) {
+            int amount = generateProcessSequenceLength(testSequenceLength);
+            int[] subsequence = generateSubsequence();
+
+            for (int j = 0; j < amount && i < testSequenceLength; j++) {
+                int randomIndex = random.nextInt(0, physicalMemorySize);
+                testSequence[i] = validateGeneratedNumber(subsequence, randomIndex, i != 0 ? testSequence[i - 1] : -1);
+                i++;
+            }
         }
     }
 
-    private int validateGeneratedNumber(int number, int lastNumber) {
-        return number == lastNumber ? (number + 1) % virtualMemorySize : number;
+    private int generateProcessSequenceLength(int testSequenceLength) {
+        Random random = new Random();
+
+        if (testSequenceLength < 100)
+            return random.nextInt((int) (testSequenceLength * 0.1), (int) (testSequenceLength * 0.3));
+        else if (testSequenceLength < 1000)
+            return random.nextInt((int) (testSequenceLength * 0.02), (int) (testSequenceLength * 0.08));
+        else
+            return random.nextInt((int) (testSequenceLength * 0.005), (int) (testSequenceLength * 0.02));
+    }
+
+    private int[] generateSubsequence() {
+        int[] subsequence = new int[physicalMemorySize];
+        Random random = new Random();
+
+        for (int i = 0; i < physicalMemorySize; i++) {
+            int number = random.nextInt(0, virtualMemorySize);
+            subsequence[i] = validateGeneratedNumber(number, i != 0 ? subsequence[i - 1] : -1);
+        }
+
+        return subsequence;
+    }
+
+    private int validateGeneratedNumber(int number, int previousNumber) {
+        return number == previousNumber ? (number + 1) % virtualMemorySize : number;
+    }
+
+    private int validateGeneratedNumber(int[] subsequence, int subsequenceIndex, int lastNumber) {
+        return subsequence[subsequenceIndex] == lastNumber ? (subsequence[(subsequenceIndex + 1) % physicalMemorySize]) : subsequence[subsequenceIndex];
     }
 }
