@@ -41,10 +41,7 @@ public class Manager {
     }
 
     private void generateTestSequence(int testSequenceLength) {
-        if (testSequenceLength < 0) {
-            testSequence = BASE_TEST_SEQUENCE;
-            return;
-        }
+        if (testSequenceLength < 0) testSequenceLength = 10000;
 
         this.testSequence = new int[testSequenceLength];
         Random random = new Random();
