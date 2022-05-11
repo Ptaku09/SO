@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 
 export type InitialStateTypes = {
+  //exercise 1
   amountOfObjects?: number;
   rrExecTime?: number;
   alpha?: number;
   beta?: number;
+
+  //exercise 2
   amountOfProcesses?: number;
   hardDriveCapacity?: number;
   initialHeadPosition?: number;
   realTimeChance?: number;
+
+  //exercise3
+  physicalMemorySize?: number;
+  virtualMemorySize?: number;
+  sequenceSize?: number;
 };
 
 const useForm = (initialState: InitialStateTypes) => {

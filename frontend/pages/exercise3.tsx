@@ -1,27 +1,22 @@
-import Head from 'next/head';
-import Title from '../components/Title';
-import Menu from '../components/Menu';
 import useForm from '../hooks/useForm';
-import FormField from '../components/FormField';
 import React, { useState } from 'react';
+import Head from 'next/head';
+import Menu from '../components/Menu';
+import Title from '../components/Title';
+import FormField from '../components/FormField';
 
 const initialState = {
-  amountOfProcesses: 100,
-  hardDriveCapacity: 100,
-  initialHeadPosition: 0,
-  realTimeChance: 30,
+  physicalMemorySize: 8,
+  virtualMemorySize: 40,
+  sequenceSize: 10000,
 };
 
 type ResultProps = {
   algorithmName: string;
-  totalWay: number;
-  displacements: number;
-  unfinishedRealTimeProcesses: number;
-  finishedRealTimeProcesses: number;
-  averageWaitingTime: number;
+  errors: number;
 };
 
-export default function Exercise2() {
+export default function Exercise3() {
   const { formValues, handleInputChange } = useForm(initialState);
   const [isPending, setIsPending] = useState(false);
   const [results, setResults] = useState([] as ResultProps[]);
@@ -31,7 +26,7 @@ export default function Exercise2() {
     setIsPending(true);
 
     fetch(
-      `http://localhost:8080/exercise2?amount=${formValues.amountOfProcesses}&driveCapacity=${formValues.hardDriveCapacity}&initialPosition=${formValues.initialHeadPosition}&realTimeChance=${formValues.realTimeChance}`
+      `http://localhost:8080/exercise3?physicalSize=${formValues.physicalMemorySize}&virtualSize=${formValues.virtualMemorySize}&sequenceSize=${formValues.sequenceSize}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -43,55 +38,45 @@ export default function Exercise2() {
   return (
     <>
       <Head>
-        <title>💾Exercise #2</title>
+        <title>💻Exercise #3</title>
       </Head>
 
       <div className="flex h-full w-full items-center justify-start flex-col font-['Lato']">
         <Menu />
-        <Title title="Exercise #2" />
+        <Title title="Exercise #3" />
         <div className="w-auto h-auto md:w-4/5 md:h-4/5 md:grid md:grid-cols-2 gap-10">
           <div className="flex items-center justify-start flex-col bg-white h-auto w-auto md:w-full md:h-full shadow-lg rounded-xl p-5 mb-8 md:mb-0">
             <p className="text-2xl 2xl:text-4xl border-b-[1px] border-b-black px-4 mb-6 md:mb-0 2xl:pb-2">Submit data</p>
             <form className="h-auto md:h-full flex items-center justify-center flex-col" onSubmit={handleRunSimulation}>
               <FormField
-                label="amount of processes"
-                id="amountOfProcesses"
+                label="physical Memory Size"
+                id="physicalMemorySize"
                 type="number"
-                value={formValues.amountOfProcesses}
+                value={formValues.physicalMemorySize}
                 maxLength={6}
                 onChange={handleInputChange}
                 min={1}
-                max={1000000}
+                max={formValues.physicalMemorySize}
               />
               <FormField
-                label="hard drive capacity"
-                id="hardDriveCapacity"
+                label="virtual Memory Size"
+                id="virtualMemorySize"
                 type="number"
-                value={formValues.hardDriveCapacity}
+                value={formValues.virtualMemorySize}
                 maxLength={6}
                 onChange={handleInputChange}
                 min={1}
                 max={10000}
               />
               <FormField
-                label="initial head position"
-                id="initialHeadPosition"
+                label="test sequence Size"
+                id="sequenceSize"
                 type="number"
-                value={formValues.initialHeadPosition}
-                maxLength={6}
+                value={formValues.sequenceSize}
+                maxLength={7}
                 onChange={handleInputChange}
                 min={0}
-                max={formValues.hardDriveCapacity}
-              />
-              <FormField
-                label="chance for real time process [%]"
-                id="realTimeChance"
-                type="number"
-                value={formValues.realTimeChance}
-                maxLength={6}
-                onChange={handleInputChange}
-                min={0}
-                max={100}
+                max={1000000}
               />
               <button className="flex items-center justify-center shadow-xl rounded-lg px-5 py-2 bg-gradient-to-r from-white to-sky-400 bg-200% bg-left hover:bg-right transition-all duration-[400ms] ease-linear">
                 {!isPending ? (
@@ -110,14 +95,11 @@ export default function Exercise2() {
             <div className="flex w-full h-full flex-col items-center justify-start overflow-y-auto scroll-smooth">
               {results.length > 0 ? (
                 results.map((result: ResultProps) => {
+                  console.log(result);
                   return (
                     <div key={result.algorithmName} className="mb-3 mt-4">
                       <p className="text-lg text-sky-700 text-center">& {result.algorithmName} &</p>
-                      <p>Total distance: {result.totalWay}</p>
-                      <p>Head displacements: {result.displacements == -1 ? '❌' : result.displacements}</p>
-                      <p>Finished real time processes: {result.finishedRealTimeProcesses == -1 ? '❌' : result.finishedRealTimeProcesses}</p>
-                      <p>Unfinished real time processes: {result.unfinishedRealTimeProcesses == -1 ? '❌' : result.unfinishedRealTimeProcesses}</p>
-                      <p className="border-b-[1px] border-b-black pb-2">Average waiting time: {Math.round(result.averageWaitingTime * 100) / 100}</p>
+                      <p className="border-b-[1px] border-b-black w-48 pb-2 text-center">Errors: {result.errors}</p>
                     </div>
                   );
                 })
