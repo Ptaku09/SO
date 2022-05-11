@@ -56,7 +56,7 @@ export default function Exercise3() {
                 maxLength={6}
                 onChange={handleInputChange}
                 min={1}
-                max={formValues.physicalMemorySize}
+                max={formValues.virtualMemorySize}
               />
               <FormField
                 label="virtual Memory Size"
