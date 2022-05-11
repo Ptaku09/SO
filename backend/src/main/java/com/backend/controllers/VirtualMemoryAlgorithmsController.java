@@ -14,6 +14,6 @@ public class VirtualMemoryAlgorithmsController {
     @CrossOrigin
     @GetMapping("/exercise3")
     public List<Results> exercise3(@RequestParam(value = "physicalSize", defaultValue = "8") int physicalSize, @RequestParam(value = "virtualSize", defaultValue = "40") int virtualSize, @RequestParam(value = "sequenceSize", defaultValue = "10000") int sequenceSize) {
-        return new Manager(physicalSize, virtualSize, sequenceSize).runSimulation();
+        return new Manager(virtualSize, physicalSize, sequenceSize).runSimulation();
     }
 }
