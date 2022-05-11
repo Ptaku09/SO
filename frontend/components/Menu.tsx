@@ -63,7 +63,7 @@ export default function Menu() {
                       htmlFor={id}
                       className="inline relative overflow-hidden after:absolute after:-z-[1] after:right-0 after:w-0 after:-bottom-[5px] after:bg-white after:h-[2px] after:transition-all after:duration-300 after:ease-out hover:after:left-0 hover:after:right-auto hover:after:w-full cursor-pointer peer-checked:after:w-full peer-checked:after:bg-sky-400 peer-checked:text-sky-400"
                     >
-                      <Link href={`/${id !== 'exercise1' && id !== 'exercise2' ? '#' : id}`}>
+                      <Link href={`/${id !== 'exercise1' && id !== 'exercise2' && id !== 'exercise3' ? '#' : id}`}>
                         <a onClick={() => sessionStorage.setItem('current-exercise', `exercise${id.slice(-1)}`)}>Exercise #{id.slice(-1)}</a>
                       </Link>
                     </label>

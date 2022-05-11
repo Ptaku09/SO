@@ -28,8 +28,8 @@ const Home: NextPage = () => {
               link: '/exercise2',
             },
             {
-              desc: 'unknown',
-              link: '#',
+              desc: 'Virtual memory 💻',
+              link: '/exercise3',
             },
             {
               desc: 'unknown',
