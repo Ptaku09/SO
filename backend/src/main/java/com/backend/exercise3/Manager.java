@@ -1,6 +1,7 @@
 package com.backend.exercise3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -72,18 +73,25 @@ public class Manager {
 
     private int[] generateSubsequence() {
         int[] subsequence = new int[physicalMemorySize];
+        Arrays.fill(subsequence, -1);
         Random random = new Random();
 
         for (int i = 0; i < physicalMemorySize; i++) {
             int number = random.nextInt(0, virtualMemorySize);
-            subsequence[i] = validateGeneratedNumber(number, i != 0 ? subsequence[i - 1] : -1);
+            subsequence[i] = validateGeneratedNumber(number, subsequence);
         }
 
         return subsequence;
     }
 
-    private int validateGeneratedNumber(int number, int previousNumber) {
-        return number == previousNumber ? (number + 1) % virtualMemorySize : number;
+    private int validateGeneratedNumber(int number, int[] subsequence) {
+        for (int j : subsequence)
+            if (j == number)
+                return validateGeneratedNumber((number + 1) % virtualMemorySize, subsequence);
+            else if (j == -1)
+                return number;
+
+        return number;
     }
 
     private int validateGeneratedNumber(int[] subsequence, int subsequenceIndex, int lastNumber) {
