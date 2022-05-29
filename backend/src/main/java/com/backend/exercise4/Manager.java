@@ -1,25 +1,33 @@
 package com.backend.exercise4;
 
-import com.backend.exercise3.Results;
-
 import java.util.*;
 
 public class Manager {
     private final static int BACKUP_NUMBER_OF_PROCESSES = 10;
     private final static int BACKUP_NUMBER_OF_PAGES_PER_PROCESS = 1000;
     private final static int BACKUP_NUMBER_OF_FRAMES = 50;
+    private final static int BACKUP_SCUFFLE_TIME = 50;
+    private final static int BACKUP_SCUFFLE_PERCENT_TO_DETECT = 50;
     private final int numberOfProcesses;
     private final int testSequenceLengthPerProcess;
     private final int numberOfFrames;
     private final Queue<Recall> globalTestSequence = new LinkedList<>();
     private final List<Queue<Recall>> processesTestSequence = new ArrayList<>();
     private final List<Integer> pages = new ArrayList<>();
+    private final int scuffleTime;
+    private final int scufflePercentToDetect;
 
-    public Manager(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames) {
-        int[] validatedData = validateData(numberOfProcesses, testSequenceLengthPerProcess, numberOfFrames);
+    public static void main(String[] args) {
+        new Manager(BACKUP_NUMBER_OF_PROCESSES, BACKUP_NUMBER_OF_PAGES_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT).runSimulation();
+    }
+
+    public Manager(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames, int scuffleTime, int scufflePercentToDetect) {
+        int[] validatedData = validateData(numberOfProcesses, testSequenceLengthPerProcess, numberOfFrames, scuffleTime, scufflePercentToDetect);
         this.numberOfProcesses = validatedData[0];
         this.testSequenceLengthPerProcess = validatedData[1];
         this.numberOfFrames = validatedData[2];
+        this.scuffleTime = validatedData[3];
+        this.scufflePercentToDetect = validatedData[4];
 
         init();
     }
@@ -27,16 +35,18 @@ public class Manager {
     public List<Results> runSimulation() {
         List<Results> results = new ArrayList<>();
 
+        results.add(new EqualAllocation(numberOfProcesses, numberOfFrames, globalTestSequence, scuffleTime, scufflePercentToDetect).run());
+
         return results;
     }
 
-    private int[] validateData(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames) {
-        if (numberOfProcesses <= 0 || testSequenceLengthPerProcess <= 0 || numberOfFrames <= 0)
-            return new int[]{BACKUP_NUMBER_OF_PROCESSES, BACKUP_NUMBER_OF_PAGES_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES};
+    private int[] validateData(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames, int scuffleTime, int scufflePercentToDetect) {
+        if (numberOfProcesses <= 0 || testSequenceLengthPerProcess <= 0 || numberOfFrames <= 0 || scuffleTime <= 0 || scufflePercentToDetect <= 0 || scufflePercentToDetect > 100)
+            return new int[]{BACKUP_NUMBER_OF_PROCESSES, BACKUP_NUMBER_OF_PAGES_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT};
         else if (testSequenceLengthPerProcess * numberOfProcesses < numberOfFrames)
-            return new int[]{numberOfProcesses, numberOfFrames, numberOfFrames};
+            return new int[]{numberOfProcesses, numberOfFrames, numberOfFrames, scuffleTime, scufflePercentToDetect};
 
-        return new int[]{numberOfProcesses, testSequenceLengthPerProcess, numberOfFrames};
+        return new int[]{numberOfProcesses, testSequenceLengthPerProcess, numberOfFrames, scuffleTime, scufflePercentToDetect};
     }
 
     private void init() {
