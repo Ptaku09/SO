@@ -56,7 +56,7 @@ public class Manager {
     }
 
     private void fillPages() {
-        for (int i = 0; i < this.numberOfProcesses * this.testSequenceLengthPerProcess; i++)
+        for (int i = 0; i < this.numberOfProcesses * this.testSequenceLengthPerProcess * 2; i++)
             this.pages.add(i);
     }
 
@@ -69,12 +69,13 @@ public class Manager {
             int k = 0;
 
             while (k < this.testSequenceLengthPerProcess) {
-                int amount = generateProcessSubsequenceLength();
-                int[] subsequence = generateSubsequence();
+                int subsequenceLength = generateProcessSubsequenceLength();
+                int amountOfSubsequenceElements = generateAmountOfSubsequenceElements();
+                int[] subsequenceElements = generateSubsequenceElements(amountOfSubsequenceElements);
 
-                for (int j = 0; j < amount && k < testSequenceLengthPerProcess; j++) {
-                    int randomIndex = random.nextInt(0, subsequence.length);
-                    processTestSequence.add(new Recall(i, validateGeneratedNumber(subsequence, randomIndex, !processTestSequence.isEmpty() ? processTestSequence.peek().getPageNumber() : -1)));
+                for (int j = 0; j < subsequenceLength && k < testSequenceLengthPerProcess; j++) {
+                    int randomIndex = random.nextInt(0, subsequenceElements.length);
+                    processTestSequence.add(new Recall(i, validateGeneratedNumber(subsequenceElements, randomIndex, !processTestSequence.isEmpty() ? processTestSequence.peek().getPageNumber() : -1)));
                     k++;
                 }
             }
@@ -106,11 +107,22 @@ public class Manager {
             return random.nextInt((int) (this.testSequenceLengthPerProcess * 0.005), (int) (this.testSequenceLengthPerProcess * 0.02));
     }
 
-    private int[] generateSubsequence() {
-        int[] subsequence = new int[this.numberOfFrames / this.numberOfProcesses];
+    private int generateAmountOfSubsequenceElements() {
         Random random = new Random();
 
-        for (int i = 0; i < subsequence.length; i++)
+        if (this.testSequenceLengthPerProcess <= 300)
+            return random.nextInt((int) (this.testSequenceLengthPerProcess * 0.03), (int) (this.testSequenceLengthPerProcess * 0.1));
+        else if (this.testSequenceLengthPerProcess <= 3000)
+            return random.nextInt((int) (this.testSequenceLengthPerProcess * 0.01), (int) (this.testSequenceLengthPerProcess * 0.02));
+        else
+            return random.nextInt((int) (this.testSequenceLengthPerProcess * 0.0005), (int) (this.testSequenceLengthPerProcess * 0.002));
+    }
+
+    private int[] generateSubsequenceElements(int amount) {
+        int[] subsequence = new int[amount];
+        Random random = new Random();
+
+        for (int i = 0; i < amount; i++)
             subsequence[i] = this.pages.remove(random.nextInt(0, this.pages.size()));
 
         return subsequence;
