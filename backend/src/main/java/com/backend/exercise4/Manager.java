@@ -1,10 +1,11 @@
 package com.backend.exercise4;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Manager {
     private final static int BACKUP_NUMBER_OF_PROCESSES = 10;
-    private final static int BACKUP_LENGTH_OF_PROCESS = 1000;
+    private final static int BACKUP_TEST_SEQUENCE_LENGTH_PER_PROCESS = 1000;
     private final static int BACKUP_NUMBER_OF_FRAMES = 50;
     private final static int BACKUP_SCUFFLE_TIME = 50;
     private final static int BACKUP_SCUFFLE_PERCENT_TO_DETECT = 50;
@@ -22,7 +23,7 @@ public class Manager {
     private final int[] numberOfDifferentPagesPerProcess;
 
     public static void main(String[] args) {
-        new Manager(BACKUP_NUMBER_OF_PROCESSES, BACKUP_LENGTH_OF_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT).runSimulation();
+        new Manager(BACKUP_NUMBER_OF_PROCESSES, BACKUP_TEST_SEQUENCE_LENGTH_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT).runSimulation();
     }
 
     public Manager(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames, int scuffleTime, int scufflePercentToDetect) {
@@ -40,15 +41,15 @@ public class Manager {
     public List<Results> runSimulation() {
         List<Results> results = new ArrayList<>();
 
-        results.add(new EqualAllocation(numberOfProcesses, numberOfFrames, globalTestSequence1, scuffleTime, scufflePercentToDetect).run());
-        results.add(new ProportionalAllocation(numberOfProcesses, globalTestSequence2, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
+        results.add(new EqualAllocation(numberOfProcesses, numberOfFrames, globalTestSequence1, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
+        results.add(new ProportionalAllocation(numberOfProcesses, numberOfFrames, globalTestSequence2, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
 
         return results;
     }
 
     private int[] validateData(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames, int scuffleTime, int scufflePercentToDetect) {
         if (numberOfProcesses <= 0 || testSequenceLengthPerProcess <= 0 || numberOfFrames <= 0 || scuffleTime <= 0 || scufflePercentToDetect <= 0 || scufflePercentToDetect > 100)
-            return new int[]{BACKUP_NUMBER_OF_PROCESSES, BACKUP_LENGTH_OF_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT};
+            return new int[]{BACKUP_NUMBER_OF_PROCESSES, BACKUP_TEST_SEQUENCE_LENGTH_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT};
         else if (testSequenceLengthPerProcess * numberOfProcesses < numberOfFrames)
             return new int[]{numberOfProcesses, numberOfFrames, numberOfFrames, scuffleTime, scufflePercentToDetect};
 
@@ -79,11 +80,20 @@ public class Manager {
                 int amountOfSubsequenceElements = generateAmountOfSubsequenceElements();
                 int[] subsequenceElements = generateSubsequenceElements(amountOfSubsequenceElements);
 
-                numberOfDifferentPagesPerProcess[i] += amountOfSubsequenceElements;
+                // Create subsequence set for counting unique elements
+                Set<Integer> subsequenceSet = Arrays.stream(subsequenceElements).boxed().collect(Collectors.toSet());
 
                 for (int j = 0; j < subsequenceLength && k < testSequenceLengthPerProcess; j++) {
-                    int randomIndex = random.nextInt(0, subsequenceElements.length);
-                    processTestSequence.add(new Recall(i, validateGeneratedNumber(subsequenceElements, randomIndex, !processTestSequence.isEmpty() ? processTestSequence.peek().getPageNumber() : -1)));
+                    int randomIndex = random.nextInt(0, amountOfSubsequenceElements);
+                    int randomElement = subsequenceElements[randomIndex];
+
+                    processTestSequence.add(new Recall(i, randomElement));
+
+                    if (subsequenceSet.contains(randomElement)) {
+                        subsequenceSet.remove(randomElement);
+                        numberOfDifferentPagesPerProcess[i]++;
+                    }
+
                     k++;
                 }
             }
@@ -143,9 +153,5 @@ public class Manager {
             subsequence[i] = this.pages.remove(random.nextInt(0, this.pages.size()));
 
         return subsequence;
-    }
-
-    private int validateGeneratedNumber(int[] subsequence, int subsequenceIndex, int lastNumber) {
-        return subsequence[subsequenceIndex] == lastNumber ? (subsequence[(subsequenceIndex + 1) % (this.numberOfFrames / this.numberOfProcesses)]) : subsequence[subsequenceIndex];
     }
 }
