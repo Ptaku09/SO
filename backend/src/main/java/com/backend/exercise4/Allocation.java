@@ -15,6 +15,8 @@ public abstract class Allocation implements Runnable {
     protected int[][] recentUsePerProcess;
     protected int maxAcceptableScuffle;
 
+    protected int freeFrames;
+
     public Allocation(String algorithmName, int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
         this.globalTestSequence = globalTestSequence;
         this.numberOfProcesses = numberOfProcesses;
@@ -52,21 +54,21 @@ public abstract class Allocation implements Runnable {
 
             scuffleTimeCounter++;
 
+            if (scuffleErrorsCounter != 0 && scuffleTimeCounter > scuffleTime)
+                scuffleErrorsCounter--;
+
+
             if (!isFound) {
                 errors++;
                 errorsPerProcess[currentProcessNumber]++;
 
                 scuffleErrorsCounter++;
-                if (scuffleTimeCounter % this.scuffleTime == 0) {
-                    if (scuffleErrorsCounter > this.maxAcceptableScuffle)
+
+                if (scuffleTimeCounter > scuffleTime)
+                    if (scuffleErrorsCounter > maxAcceptableScuffle)
                         scuffleErrors++;
 
-                    scuffleTimeCounter = 0;
-                }
-
                 updatePhysicalMemory(currentProcessNumber, currentPageNumber);
-            } else {
-                scuffleErrorsCounter = scuffleErrorsCounter - 1 < 0 ? 0 : scuffleErrorsCounter;
             }
 
             updateRecentUse(currentProcessNumber);
