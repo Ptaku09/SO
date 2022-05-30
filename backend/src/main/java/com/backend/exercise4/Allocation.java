@@ -74,7 +74,7 @@ public abstract class Allocation implements Runnable {
             updateRecentUse(currentProcessNumber);
         }
 
-        return new Results(algorithmName, errors, errorsPerProcess, scuffleErrors);
+        return new Results(algorithmName, errors, errorsPerProcess, scuffleErrors, 0);
     }
 
     private void init() {

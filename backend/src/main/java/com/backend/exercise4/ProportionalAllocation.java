@@ -8,9 +8,20 @@ public class ProportionalAllocation extends Allocation {
     }
 
     protected void calculateFramesPerProcess() {
+        int sum = calculateSumOfUsedPages();
+
         for (int i = 0; i < framesPerProcess.length; i++) {
-            framesPerProcess[i] = new int[(int) Math.ceil((double) numberOfDifferentPagesPerProcess[i] / numberOfProcesses)];
-            recentUsePerProcess[i] = new int[(int) Math.ceil((double) numberOfDifferentPagesPerProcess[i] / numberOfProcesses)];
+            framesPerProcess[i] = new int[(int) Math.ceil((double) numberOfDifferentPagesPerProcess[i] / sum * numberOfFrames)];
+            recentUsePerProcess[i] = new int[(int) Math.ceil((double) numberOfDifferentPagesPerProcess[i] / sum * numberOfFrames)];
         }
+    }
+
+    private int calculateSumOfUsedPages() {
+        int sum = 0;
+
+        for (int i = 0; i < numberOfProcesses; i++)
+            sum += numberOfDifferentPagesPerProcess[i];
+
+        return sum;
     }
 }
