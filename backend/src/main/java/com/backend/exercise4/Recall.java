@@ -1,6 +1,6 @@
 package com.backend.exercise4;
 
-public class Recall {
+public class Recall implements Cloneable {
     private final int processNumber;
     private final int pageNumber;
 
@@ -15,5 +15,10 @@ public class Recall {
 
     public int getPageNumber() {
         return pageNumber;
+    }
+
+    @Override
+    public Recall clone() throws CloneNotSupportedException {
+        return (Recall) super.clone();
     }
 }

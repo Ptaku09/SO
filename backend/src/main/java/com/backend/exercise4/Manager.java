@@ -4,21 +4,25 @@ import java.util.*;
 
 public class Manager {
     private final static int BACKUP_NUMBER_OF_PROCESSES = 10;
-    private final static int BACKUP_NUMBER_OF_PAGES_PER_PROCESS = 1000;
+    private final static int BACKUP_LENGTH_OF_PROCESS = 1000;
     private final static int BACKUP_NUMBER_OF_FRAMES = 50;
     private final static int BACKUP_SCUFFLE_TIME = 50;
     private final static int BACKUP_SCUFFLE_PERCENT_TO_DETECT = 50;
     private final int numberOfProcesses;
     private final int testSequenceLengthPerProcess;
     private final int numberOfFrames;
-    private final Queue<Recall> globalTestSequence = new LinkedList<>();
+    private final Queue<Recall> globalTestSequence1 = new LinkedList<>();
+    private final Queue<Recall> globalTestSequence2 = new LinkedList<>();
+    private final Queue<Recall> globalTestSequence3 = new LinkedList<>();
+    private final Queue<Recall> globalTestSequence4 = new LinkedList<>();
     private final List<Queue<Recall>> processesTestSequence = new ArrayList<>();
     private final List<Integer> pages = new ArrayList<>();
     private final int scuffleTime;
     private final int scufflePercentToDetect;
+    private final int[] numberOfDifferentPagesPerProcess;
 
     public static void main(String[] args) {
-        new Manager(BACKUP_NUMBER_OF_PROCESSES, BACKUP_NUMBER_OF_PAGES_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT).runSimulation();
+        new Manager(BACKUP_NUMBER_OF_PROCESSES, BACKUP_LENGTH_OF_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT).runSimulation();
     }
 
     public Manager(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames, int scuffleTime, int scufflePercentToDetect) {
@@ -28,6 +32,7 @@ public class Manager {
         this.numberOfFrames = validatedData[2];
         this.scuffleTime = validatedData[3];
         this.scufflePercentToDetect = validatedData[4];
+        this.numberOfDifferentPagesPerProcess = new int[validatedData[0]];
 
         init();
     }
@@ -35,14 +40,15 @@ public class Manager {
     public List<Results> runSimulation() {
         List<Results> results = new ArrayList<>();
 
-        results.add(new EqualAllocation(numberOfProcesses, numberOfFrames, globalTestSequence, scuffleTime, scufflePercentToDetect).run());
+        results.add(new EqualAllocation(numberOfProcesses, numberOfFrames, globalTestSequence1, scuffleTime, scufflePercentToDetect).run());
+        results.add(new ProportionalAllocation(numberOfProcesses, globalTestSequence2, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
 
         return results;
     }
 
     private int[] validateData(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames, int scuffleTime, int scufflePercentToDetect) {
         if (numberOfProcesses <= 0 || testSequenceLengthPerProcess <= 0 || numberOfFrames <= 0 || scuffleTime <= 0 || scufflePercentToDetect <= 0 || scufflePercentToDetect > 100)
-            return new int[]{BACKUP_NUMBER_OF_PROCESSES, BACKUP_NUMBER_OF_PAGES_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT};
+            return new int[]{BACKUP_NUMBER_OF_PROCESSES, BACKUP_LENGTH_OF_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT};
         else if (testSequenceLengthPerProcess * numberOfProcesses < numberOfFrames)
             return new int[]{numberOfProcesses, numberOfFrames, numberOfFrames, scuffleTime, scufflePercentToDetect};
 
@@ -52,7 +58,7 @@ public class Manager {
     private void init() {
         fillPages();
         generateTestSequences();
-        createGlobalTestSequence();
+        createGlobalTestSequences();
     }
 
     private void fillPages() {
@@ -73,6 +79,8 @@ public class Manager {
                 int amountOfSubsequenceElements = generateAmountOfSubsequenceElements();
                 int[] subsequenceElements = generateSubsequenceElements(amountOfSubsequenceElements);
 
+                numberOfDifferentPagesPerProcess[i] += amountOfSubsequenceElements;
+
                 for (int j = 0; j < subsequenceLength && k < testSequenceLengthPerProcess; j++) {
                     int randomIndex = random.nextInt(0, subsequenceElements.length);
                     processTestSequence.add(new Recall(i, validateGeneratedNumber(subsequenceElements, randomIndex, !processTestSequence.isEmpty() ? processTestSequence.peek().getPageNumber() : -1)));
@@ -82,14 +90,23 @@ public class Manager {
         }
     }
 
-    private void createGlobalTestSequence() {
+    private void createGlobalTestSequences() {
         Random random = new Random();
 
         while (!processesTestSequence.isEmpty()) {
             int randomProcessIndex = random.nextInt(0, processesTestSequence.size());
             Queue<Recall> randomProcess = processesTestSequence.get(randomProcessIndex);
+            Recall recallToAdd = randomProcess.poll();
 
-            globalTestSequence.add(randomProcess.poll());
+            globalTestSequence1.add(recallToAdd);
+
+            try {
+                globalTestSequence2.add(recallToAdd.clone());
+                globalTestSequence3.add(recallToAdd.clone());
+                globalTestSequence4.add(recallToAdd.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
 
             if (randomProcess.isEmpty())
                 processesTestSequence.remove(randomProcessIndex);
