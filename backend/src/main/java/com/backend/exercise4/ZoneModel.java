@@ -1,11 +1,9 @@
 package com.backend.exercise4;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
-public class PageFaultsControl implements Runnable {
+public class ZoneModel implements Runnable {
+    private final static int TIME_WINDOW = 100;
     private final Queue<Recall> globalTestSequence;
     private final int numberOfProcesses;
     private final int numberOfFrames;
@@ -15,16 +13,14 @@ public class PageFaultsControl implements Runnable {
     private final String algorithmName;
     private final int[][] framesPerProcess;
     private final int[][] recentUsePerProcess;
-    private final float[] ppf;
-    private final static int TIME_WINDOW = 50;
-    private final int[] processErrorsInTime;
-    private final static float MIN_ERRORS = 0.2f;
-    private final static float MAX_ERRORS = 0.8f;
     private final List<Integer> stoppedProcesses = new ArrayList<>();
     private int maxAcceptableScuffle;
     private int freeFrames;
 
-    public PageFaultsControl(String algorithmName, int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
+    private HashMap<Integer, HashSet<Integer>> pagesPerProcess = new HashMap<>();
+
+
+    public ZoneModel(String algorithmName, int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
         this.globalTestSequence = globalTestSequence;
         this.numberOfProcesses = numberOfProcesses;
         this.numberOfFrames = numberOfFrames;
@@ -34,9 +30,6 @@ public class PageFaultsControl implements Runnable {
         this.scufflePercentToDetect = scufflePercentToDetect;
         this.numberOfDifferentPagesPerProcess = numberOfDifferentPagesPerProcess;
         this.algorithmName = algorithmName;
-
-        this.ppf = new float[numberOfProcesses];
-        this.processErrorsInTime = new int[numberOfProcesses];
 
         init();
     }
@@ -49,7 +42,7 @@ public class PageFaultsControl implements Runnable {
         int scuffleTimeCounter = 0;
         int scuffleErrorsCounter = 0;
 
-        int processErrorsTimer = 0;
+        int timer = 0;
 
         while (!globalTestSequence.isEmpty()) {
             boolean isFound = false;
@@ -71,23 +64,24 @@ public class PageFaultsControl implements Runnable {
             if (scuffleErrorsCounter != 0 && scuffleTimeCounter > scuffleTime)
                 scuffleErrorsCounter--;
 
+            timer++;
 
-            processErrorsTimer++;
 
-            if (processErrorsTimer > TIME_WINDOW) {
-                for (int i = 0; i < numberOfProcesses; i++)
-                    if (processErrorsInTime[i] > 0)
-                        processErrorsInTime[i]--;
+            if (!pagesPerProcess.containsKey(currentProcessNumber))
+                pagesPerProcess.put(currentProcessNumber, new HashSet<>());
 
-                calculatePPF();
+            pagesPerProcess.get(currentProcessNumber).add(currentPageNumber);
+
+            if (timer % (TIME_WINDOW / 2) == 0) {
+                int neededFrames = calculateNeededFrames(currentProcessNumber);
+                makeSpace(neededFrames);
+                addFrames(neededFrames, currentProcessNumber);
+                resetCounters();
             }
 
             if (!isFound) {
                 errors++;
                 errorsPerProcess[currentProcessNumber]++;
-
-                processErrorsInTime[currentProcessNumber]++;
-                if (processErrorsTimer > TIME_WINDOW) checkStatus(currentProcessNumber);
 
                 scuffleErrorsCounter++;
 
@@ -104,41 +98,45 @@ public class PageFaultsControl implements Runnable {
         return new Results(algorithmName, errors, errorsPerProcess, scuffleErrors, stoppedProcesses.size());
     }
 
-    private void checkStatus(int currentProcessNumber) {
-        calculatePPF(currentProcessNumber);
+    private void makeSpace(int neededFrames) {
+        if (neededFrames > freeFrames) {
+            for (Integer key : pagesPerProcess.keySet()) {
+                stoppedProcesses.add(key);
+                freeFrames += framesPerProcess[key].length;
 
-        if (ppf[currentProcessNumber] > MAX_ERRORS) {
-            if (freeFrames > 0) {
-                framesPerProcess[currentProcessNumber] = Arrays.copyOf(framesPerProcess[currentProcessNumber], framesPerProcess[currentProcessNumber].length + 1);
-                framesPerProcess[currentProcessNumber][framesPerProcess[currentProcessNumber].length - 1] = -1;
-                recentUsePerProcess[currentProcessNumber] = Arrays.copyOf(recentUsePerProcess[currentProcessNumber], recentUsePerProcess[currentProcessNumber].length + 1);
-                recentUsePerProcess[currentProcessNumber][recentUsePerProcess[currentProcessNumber].length - 1] = -1;
-                freeFrames--;
+                if (neededFrames <= freeFrames) break;
+            }
+        }
+    }
+
+    private void addFrames(int neededFrames, int currentProcessNumber) {
+        int framesToAdd = neededFrames - framesPerProcess[currentProcessNumber].length;
+
+        if (framesToAdd > 0) {
+            framesPerProcess[currentProcessNumber] = Arrays.copyOf(framesPerProcess[currentProcessNumber], framesPerProcess[currentProcessNumber].length + framesToAdd);
+            recentUsePerProcess[currentProcessNumber] = Arrays.copyOf(recentUsePerProcess[currentProcessNumber], recentUsePerProcess[currentProcessNumber].length + framesToAdd);
+        } else if (framesToAdd < 0) {
+            if (framesPerProcess[currentProcessNumber].length + framesToAdd < 1) {
+                framesPerProcess[currentProcessNumber] = new int[1];
+                framesPerProcess[currentProcessNumber][0] = -1;
+                recentUsePerProcess[currentProcessNumber] = new int[1];
+                recentUsePerProcess[currentProcessNumber][0] = -1;
             } else {
-                stoppedProcesses.add(currentProcessNumber);
-                freeFrames += framesPerProcess[currentProcessNumber].length;
-            }
-        } else if (ppf[currentProcessNumber] < MIN_ERRORS && framesPerProcess[currentProcessNumber].length > 1) {
-            framesPerProcess[currentProcessNumber] = Arrays.copyOfRange(framesPerProcess[currentProcessNumber], 0, framesPerProcess[currentProcessNumber].length - 1);
-            recentUsePerProcess[currentProcessNumber] = Arrays.copyOfRange(recentUsePerProcess[currentProcessNumber], 0, recentUsePerProcess[currentProcessNumber].length - 1);
-            freeFrames++;
-        }
-    }
-
-    private void calculatePPF() {
-        for (int i = 0; i < ppf.length; i++) {
-            ppf[i] = (float) processErrorsInTime[i] / TIME_WINDOW;
-
-            if (ppf[i] < MIN_ERRORS && framesPerProcess[i].length > 1) {
-                framesPerProcess[i] = Arrays.copyOfRange(framesPerProcess[i], 0, framesPerProcess[i].length - 1);
-                recentUsePerProcess[i] = Arrays.copyOfRange(recentUsePerProcess[i], 0, recentUsePerProcess[i].length - 1);
-                freeFrames++;
+                framesPerProcess[currentProcessNumber] = Arrays.copyOfRange(framesPerProcess[currentProcessNumber], 0, framesPerProcess[currentProcessNumber].length + framesToAdd);
+                recentUsePerProcess[currentProcessNumber] = Arrays.copyOfRange(recentUsePerProcess[currentProcessNumber], 0, recentUsePerProcess[currentProcessNumber].length + framesToAdd);
             }
         }
+
+        freeFrames -= framesToAdd;
     }
 
-    private void calculatePPF(int processNumber) {
-        ppf[processNumber] = (float) processErrorsInTime[processNumber] / TIME_WINDOW;
+    private int calculateNeededFrames(int currentProcessNumber) {
+        return pagesPerProcess.get(currentProcessNumber).size();
+    }
+
+    private void resetCounters() {
+        for (Integer key : pagesPerProcess.keySet())
+            pagesPerProcess.get(key).clear();
     }
 
     private void init() {
