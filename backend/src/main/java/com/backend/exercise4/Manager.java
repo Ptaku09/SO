@@ -39,8 +39,8 @@ public class Manager {
 
         results.add(new EqualAllocation(numberOfProcesses, numberOfFrames, globalTestSequence1, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
         results.add(new ProportionalAllocation(numberOfProcesses, numberOfFrames, globalTestSequence2, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
-        results.add(new PageFaultsControl("Page Faults Control", numberOfProcesses, numberOfFrames, globalTestSequence3, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
-        results.add(new ZoneModel("Zone Model", numberOfProcesses, numberOfFrames, globalTestSequence4, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
+        results.add(new PageFaultsControl(numberOfProcesses, numberOfFrames, globalTestSequence3, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
+        results.add(new ZoneModel(numberOfProcesses, numberOfFrames, globalTestSequence4, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
 
         return results;
     }

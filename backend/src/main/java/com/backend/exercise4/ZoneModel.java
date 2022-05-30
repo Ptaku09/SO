@@ -10,17 +10,15 @@ public class ZoneModel implements Runnable {
     private final int scuffleTime;
     private final int scufflePercentToDetect;
     private final int[] numberOfDifferentPagesPerProcess;
-    private final String algorithmName;
     private final int[][] framesPerProcess;
     private final int[][] recentUsePerProcess;
     private final List<Integer> stoppedProcesses = new ArrayList<>();
+    private final HashMap<Integer, HashSet<Integer>> pagesPerProcess = new HashMap<>();
     private int maxAcceptableScuffle;
     private int freeFrames;
 
-    private HashMap<Integer, HashSet<Integer>> pagesPerProcess = new HashMap<>();
 
-
-    public ZoneModel(String algorithmName, int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
+    public ZoneModel(int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
         this.globalTestSequence = globalTestSequence;
         this.numberOfProcesses = numberOfProcesses;
         this.numberOfFrames = numberOfFrames;
@@ -29,7 +27,6 @@ public class ZoneModel implements Runnable {
         this.scuffleTime = scuffleTime;
         this.scufflePercentToDetect = scufflePercentToDetect;
         this.numberOfDifferentPagesPerProcess = numberOfDifferentPagesPerProcess;
-        this.algorithmName = algorithmName;
 
         init();
     }
@@ -41,7 +38,6 @@ public class ZoneModel implements Runnable {
         int scuffleErrors = 0;
         int scuffleTimeCounter = 0;
         int scuffleErrorsCounter = 0;
-
         int timer = 0;
 
         while (!globalTestSequence.isEmpty()) {
@@ -65,7 +61,6 @@ public class ZoneModel implements Runnable {
                 scuffleErrorsCounter--;
 
             timer++;
-
 
             if (!pagesPerProcess.containsKey(currentProcessNumber))
                 pagesPerProcess.put(currentProcessNumber, new HashSet<>());
@@ -95,48 +90,7 @@ public class ZoneModel implements Runnable {
             updateRecentUse(currentProcessNumber);
         }
 
-        return new Results(algorithmName, errors, errorsPerProcess, scuffleErrors, stoppedProcesses.size());
-    }
-
-    private void makeSpace(int neededFrames) {
-        if (neededFrames > freeFrames) {
-            for (Integer key : pagesPerProcess.keySet()) {
-                stoppedProcesses.add(key);
-                freeFrames += framesPerProcess[key].length;
-
-                if (neededFrames <= freeFrames) break;
-            }
-        }
-    }
-
-    private void addFrames(int neededFrames, int currentProcessNumber) {
-        int framesToAdd = neededFrames - framesPerProcess[currentProcessNumber].length;
-
-        if (framesToAdd > 0) {
-            framesPerProcess[currentProcessNumber] = Arrays.copyOf(framesPerProcess[currentProcessNumber], framesPerProcess[currentProcessNumber].length + framesToAdd);
-            recentUsePerProcess[currentProcessNumber] = Arrays.copyOf(recentUsePerProcess[currentProcessNumber], recentUsePerProcess[currentProcessNumber].length + framesToAdd);
-        } else if (framesToAdd < 0) {
-            if (framesPerProcess[currentProcessNumber].length + framesToAdd < 1) {
-                framesPerProcess[currentProcessNumber] = new int[1];
-                framesPerProcess[currentProcessNumber][0] = -1;
-                recentUsePerProcess[currentProcessNumber] = new int[1];
-                recentUsePerProcess[currentProcessNumber][0] = -1;
-            } else {
-                framesPerProcess[currentProcessNumber] = Arrays.copyOfRange(framesPerProcess[currentProcessNumber], 0, framesPerProcess[currentProcessNumber].length + framesToAdd);
-                recentUsePerProcess[currentProcessNumber] = Arrays.copyOfRange(recentUsePerProcess[currentProcessNumber], 0, recentUsePerProcess[currentProcessNumber].length + framesToAdd);
-            }
-        }
-
-        freeFrames -= framesToAdd;
-    }
-
-    private int calculateNeededFrames(int currentProcessNumber) {
-        return pagesPerProcess.get(currentProcessNumber).size();
-    }
-
-    private void resetCounters() {
-        for (Integer key : pagesPerProcess.keySet())
-            pagesPerProcess.get(key).clear();
+        return new Results("Zone Model", errors, errorsPerProcess, scuffleErrors, stoppedProcesses.size());
     }
 
     private void init() {
@@ -177,6 +131,46 @@ public class ZoneModel implements Runnable {
 
     private void fillRecentUseArray() {
         for (int[] recentUse : recentUsePerProcess) Arrays.fill(recentUse, -1);
+    }
+
+    private int calculateNeededFrames(int currentProcessNumber) {
+        return pagesPerProcess.get(currentProcessNumber).size();
+    }
+
+    private void makeSpace(int neededFrames) {
+        if (neededFrames > freeFrames)
+            for (Integer key : pagesPerProcess.keySet()) {
+                stoppedProcesses.add(key);
+                freeFrames += framesPerProcess[key].length;
+
+                if (neededFrames <= freeFrames) break;
+            }
+    }
+
+    private void addFrames(int neededFrames, int currentProcessNumber) {
+        int framesToAdd = neededFrames - framesPerProcess[currentProcessNumber].length;
+
+        if (framesToAdd > 0) {
+            framesPerProcess[currentProcessNumber] = Arrays.copyOf(framesPerProcess[currentProcessNumber], framesPerProcess[currentProcessNumber].length + framesToAdd);
+            recentUsePerProcess[currentProcessNumber] = Arrays.copyOf(recentUsePerProcess[currentProcessNumber], recentUsePerProcess[currentProcessNumber].length + framesToAdd);
+        } else if (framesToAdd < 0) {
+            if (framesPerProcess[currentProcessNumber].length + framesToAdd < 1) {
+                framesPerProcess[currentProcessNumber] = new int[1];
+                framesPerProcess[currentProcessNumber][0] = -1;
+                recentUsePerProcess[currentProcessNumber] = new int[1];
+                recentUsePerProcess[currentProcessNumber][0] = -1;
+            } else {
+                framesPerProcess[currentProcessNumber] = Arrays.copyOfRange(framesPerProcess[currentProcessNumber], 0, framesPerProcess[currentProcessNumber].length + framesToAdd);
+                recentUsePerProcess[currentProcessNumber] = Arrays.copyOfRange(recentUsePerProcess[currentProcessNumber], 0, recentUsePerProcess[currentProcessNumber].length + framesToAdd);
+            }
+        }
+
+        freeFrames -= framesToAdd;
+    }
+
+    private void resetCounters() {
+        for (Integer key : pagesPerProcess.keySet())
+            pagesPerProcess.get(key).clear();
     }
 
     private void updatePhysicalMemory(int currentProcessNumber, int currentPageNumber) {

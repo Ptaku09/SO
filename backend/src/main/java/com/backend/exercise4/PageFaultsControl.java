@@ -12,7 +12,6 @@ public class PageFaultsControl implements Runnable {
     private final int scuffleTime;
     private final int scufflePercentToDetect;
     private final int[] numberOfDifferentPagesPerProcess;
-    private final String algorithmName;
     private final int[][] framesPerProcess;
     private final int[][] recentUsePerProcess;
     private final float[] ppf;
@@ -24,7 +23,7 @@ public class PageFaultsControl implements Runnable {
     private int maxAcceptableScuffle;
     private int freeFrames;
 
-    public PageFaultsControl(String algorithmName, int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
+    public PageFaultsControl(int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
         this.globalTestSequence = globalTestSequence;
         this.numberOfProcesses = numberOfProcesses;
         this.numberOfFrames = numberOfFrames;
@@ -33,8 +32,6 @@ public class PageFaultsControl implements Runnable {
         this.scuffleTime = scuffleTime;
         this.scufflePercentToDetect = scufflePercentToDetect;
         this.numberOfDifferentPagesPerProcess = numberOfDifferentPagesPerProcess;
-        this.algorithmName = algorithmName;
-
         this.ppf = new float[numberOfProcesses];
         this.processErrorsInTime = new int[numberOfProcesses];
 
@@ -48,7 +45,6 @@ public class PageFaultsControl implements Runnable {
         int scuffleErrors = 0;
         int scuffleTimeCounter = 0;
         int scuffleErrorsCounter = 0;
-
         int processErrorsTimer = 0;
 
         while (!globalTestSequence.isEmpty()) {
@@ -101,44 +97,7 @@ public class PageFaultsControl implements Runnable {
             updateRecentUse(currentProcessNumber);
         }
 
-        return new Results(algorithmName, errors, errorsPerProcess, scuffleErrors, stoppedProcesses.size());
-    }
-
-    private void checkStatus(int currentProcessNumber) {
-        calculatePPF(currentProcessNumber);
-
-        if (ppf[currentProcessNumber] > MAX_ERRORS) {
-            if (freeFrames > 0) {
-                framesPerProcess[currentProcessNumber] = Arrays.copyOf(framesPerProcess[currentProcessNumber], framesPerProcess[currentProcessNumber].length + 1);
-                framesPerProcess[currentProcessNumber][framesPerProcess[currentProcessNumber].length - 1] = -1;
-                recentUsePerProcess[currentProcessNumber] = Arrays.copyOf(recentUsePerProcess[currentProcessNumber], recentUsePerProcess[currentProcessNumber].length + 1);
-                recentUsePerProcess[currentProcessNumber][recentUsePerProcess[currentProcessNumber].length - 1] = -1;
-                freeFrames--;
-            } else {
-                stoppedProcesses.add(currentProcessNumber);
-                freeFrames += framesPerProcess[currentProcessNumber].length;
-            }
-        } else if (ppf[currentProcessNumber] < MIN_ERRORS && framesPerProcess[currentProcessNumber].length > 1) {
-            framesPerProcess[currentProcessNumber] = Arrays.copyOfRange(framesPerProcess[currentProcessNumber], 0, framesPerProcess[currentProcessNumber].length - 1);
-            recentUsePerProcess[currentProcessNumber] = Arrays.copyOfRange(recentUsePerProcess[currentProcessNumber], 0, recentUsePerProcess[currentProcessNumber].length - 1);
-            freeFrames++;
-        }
-    }
-
-    private void calculatePPF() {
-        for (int i = 0; i < ppf.length; i++) {
-            ppf[i] = (float) processErrorsInTime[i] / TIME_WINDOW;
-
-            if (ppf[i] < MIN_ERRORS && framesPerProcess[i].length > 1) {
-                framesPerProcess[i] = Arrays.copyOfRange(framesPerProcess[i], 0, framesPerProcess[i].length - 1);
-                recentUsePerProcess[i] = Arrays.copyOfRange(recentUsePerProcess[i], 0, recentUsePerProcess[i].length - 1);
-                freeFrames++;
-            }
-        }
-    }
-
-    private void calculatePPF(int processNumber) {
-        ppf[processNumber] = (float) processErrorsInTime[processNumber] / TIME_WINDOW;
+        return new Results("Page Faults Control", errors, errorsPerProcess, scuffleErrors, stoppedProcesses.size());
     }
 
     private void init() {
@@ -179,6 +138,43 @@ public class PageFaultsControl implements Runnable {
 
     private void fillRecentUseArray() {
         for (int[] recentUse : recentUsePerProcess) Arrays.fill(recentUse, -1);
+    }
+
+    private void calculatePPF() {
+        for (int i = 0; i < ppf.length; i++) {
+            ppf[i] = (float) processErrorsInTime[i] / TIME_WINDOW;
+
+            if (ppf[i] < MIN_ERRORS && framesPerProcess[i].length > 1) {
+                framesPerProcess[i] = Arrays.copyOfRange(framesPerProcess[i], 0, framesPerProcess[i].length - 1);
+                recentUsePerProcess[i] = Arrays.copyOfRange(recentUsePerProcess[i], 0, recentUsePerProcess[i].length - 1);
+                freeFrames++;
+            }
+        }
+    }
+
+    private void checkStatus(int currentProcessNumber) {
+        calculatePPF(currentProcessNumber);
+
+        if (ppf[currentProcessNumber] > MAX_ERRORS) {
+            if (freeFrames > 0) {
+                framesPerProcess[currentProcessNumber] = Arrays.copyOf(framesPerProcess[currentProcessNumber], framesPerProcess[currentProcessNumber].length + 1);
+                framesPerProcess[currentProcessNumber][framesPerProcess[currentProcessNumber].length - 1] = -1;
+                recentUsePerProcess[currentProcessNumber] = Arrays.copyOf(recentUsePerProcess[currentProcessNumber], recentUsePerProcess[currentProcessNumber].length + 1);
+                recentUsePerProcess[currentProcessNumber][recentUsePerProcess[currentProcessNumber].length - 1] = -1;
+                freeFrames--;
+            } else {
+                stoppedProcesses.add(currentProcessNumber);
+                freeFrames += framesPerProcess[currentProcessNumber].length;
+            }
+        } else if (ppf[currentProcessNumber] < MIN_ERRORS && framesPerProcess[currentProcessNumber].length > 1) {
+            framesPerProcess[currentProcessNumber] = Arrays.copyOfRange(framesPerProcess[currentProcessNumber], 0, framesPerProcess[currentProcessNumber].length - 1);
+            recentUsePerProcess[currentProcessNumber] = Arrays.copyOfRange(recentUsePerProcess[currentProcessNumber], 0, recentUsePerProcess[currentProcessNumber].length - 1);
+            freeFrames++;
+        }
+    }
+
+    private void calculatePPF(int processNumber) {
+        ppf[processNumber] = (float) processErrorsInTime[processNumber] / TIME_WINDOW;
     }
 
     private void updatePhysicalMemory(int currentProcessNumber, int currentPageNumber) {
