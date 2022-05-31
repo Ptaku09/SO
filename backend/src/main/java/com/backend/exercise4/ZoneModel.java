@@ -12,7 +12,7 @@ public class ZoneModel implements Runnable {
     private final int[] numberOfDifferentPagesPerProcess;
     private final int[][] framesPerProcess;
     private final int[][] recentUsePerProcess;
-    private final List<Integer> stoppedProcesses = new ArrayList<>();
+    private final Set<Integer> stoppedProcesses = new HashSet<>();
     private final HashMap<Integer, HashSet<Integer>> pagesPerProcess = new HashMap<>();
     private int maxAcceptableScuffle;
     private int freeFrames;
@@ -69,7 +69,7 @@ public class ZoneModel implements Runnable {
 
             if (timer % (TIME_WINDOW / 2) == 0) {
                 int neededFrames = calculateNeededFrames(currentProcessNumber);
-                makeSpace(neededFrames);
+                makeSpace(neededFrames, currentProcessNumber);
                 addFrames(neededFrames, currentProcessNumber);
                 resetCounters();
             }
@@ -137,9 +137,10 @@ public class ZoneModel implements Runnable {
         return pagesPerProcess.get(currentProcessNumber).size();
     }
 
-    private void makeSpace(int neededFrames) {
+    private void makeSpace(int neededFrames, int currentProcessNumber) {
         if (neededFrames > freeFrames)
             for (Integer key : pagesPerProcess.keySet()) {
+                if (key == currentProcessNumber) continue;
                 stoppedProcesses.add(key);
                 freeFrames += framesPerProcess[key].length;
 

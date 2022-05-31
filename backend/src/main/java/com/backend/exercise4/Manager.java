@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 public class Manager {
     private final static int BACKUP_NUMBER_OF_PROCESSES = 10;
     private final static int BACKUP_TEST_SEQUENCE_LENGTH_PER_PROCESS = 1000;
-    private final static int BACKUP_NUMBER_OF_FRAMES = 50;
+    private final static int BACKUP_NUMBER_OF_FRAMES = 60;
     private final static int BACKUP_SCUFFLE_TIME = 50;
     private final static int BACKUP_SCUFFLE_PERCENT_TO_DETECT = 50;
     private final int numberOfProcesses;
@@ -21,6 +21,11 @@ public class Manager {
     private final int scuffleTime;
     private final int scufflePercentToDetect;
     private final int[] numberOfDifferentPagesPerProcess;
+
+    public static void main(String[] args) {
+        Manager manager = new Manager(BACKUP_NUMBER_OF_PROCESSES, BACKUP_TEST_SEQUENCE_LENGTH_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT);
+        manager.runSimulation();
+    }
 
     public Manager(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames, int scuffleTime, int scufflePercentToDetect) {
         int[] validatedData = validateData(numberOfProcesses, testSequenceLengthPerProcess, numberOfFrames, scuffleTime, scufflePercentToDetect);
@@ -39,7 +44,7 @@ public class Manager {
 
         results.add(new EqualAllocation(numberOfProcesses, numberOfFrames, globalTestSequence1, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
         results.add(new ProportionalAllocation(numberOfProcesses, numberOfFrames, globalTestSequence2, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
-        results.add(new PageFaultsControl(numberOfProcesses, numberOfFrames, globalTestSequence3, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
+        results.add(new DynamicAllocation(numberOfProcesses, numberOfFrames, globalTestSequence3, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
         results.add(new ZoneModel(numberOfProcesses, numberOfFrames, globalTestSequence4, numberOfDifferentPagesPerProcess, scuffleTime, scufflePercentToDetect).run());
 
         return results;

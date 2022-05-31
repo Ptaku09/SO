@@ -1,11 +1,11 @@
 package com.backend.exercise4;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 
-public class PageFaultsControl implements Runnable {
+public class DynamicAllocation implements Runnable {
     private final Queue<Recall> globalTestSequence;
     private final int numberOfProcesses;
     private final int numberOfFrames;
@@ -15,15 +15,15 @@ public class PageFaultsControl implements Runnable {
     private final int[][] framesPerProcess;
     private final int[][] recentUsePerProcess;
     private final float[] ppf;
-    private final static int TIME_WINDOW = 50;
+    private final static int TIME_WINDOW = 100;
     private final int[] processErrorsInTime;
-    private final static float MIN_ERRORS = 0.2f;
-    private final static float MAX_ERRORS = 0.8f;
-    private final List<Integer> stoppedProcesses = new ArrayList<>();
+    private final static float MIN_ERRORS = 0.02f;
+    private final static float MAX_ERRORS = 0.14f;
+    private final Set<Integer> stoppedProcesses = new HashSet<>();
     private int maxAcceptableScuffle;
     private int freeFrames;
 
-    public PageFaultsControl(int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
+    public DynamicAllocation(int numberOfProcesses, int numberOfFrames, Queue<Recall> globalTestSequence, int[] numberOfDifferentPagesPerProcess, int scuffleTime, int scufflePercentToDetect) {
         this.globalTestSequence = globalTestSequence;
         this.numberOfProcesses = numberOfProcesses;
         this.numberOfFrames = numberOfFrames;
@@ -67,15 +67,11 @@ public class PageFaultsControl implements Runnable {
             if (scuffleErrorsCounter != 0 && scuffleTimeCounter > scuffleTime)
                 scuffleErrorsCounter--;
 
-
             processErrorsTimer++;
 
-            if (processErrorsTimer > TIME_WINDOW) {
-                for (int i = 0; i < numberOfProcesses; i++)
-                    if (processErrorsInTime[i] > 0)
-                        processErrorsInTime[i]--;
-
+            if (processErrorsTimer == TIME_WINDOW) {
                 calculatePPF();
+                processErrorsTimer = 0;
             }
 
             if (!isFound) {
@@ -83,7 +79,6 @@ public class PageFaultsControl implements Runnable {
                 errorsPerProcess[currentProcessNumber]++;
 
                 processErrorsInTime[currentProcessNumber]++;
-                if (processErrorsTimer > TIME_WINDOW) checkStatus(currentProcessNumber);
 
                 scuffleErrorsCounter++;
 
@@ -97,7 +92,7 @@ public class PageFaultsControl implements Runnable {
             updateRecentUse(currentProcessNumber);
         }
 
-        return new Results("Page Faults Control", errors, errorsPerProcess, scuffleErrors, stoppedProcesses.size());
+        return new Results("Dynamic Allocation", errors, errorsPerProcess, scuffleErrors, stoppedProcesses.size());
     }
 
     private void init() {
@@ -144,39 +139,27 @@ public class PageFaultsControl implements Runnable {
         for (int i = 0; i < ppf.length; i++) {
             ppf[i] = (float) processErrorsInTime[i] / TIME_WINDOW;
 
-            if (ppf[i] < MIN_ERRORS && framesPerProcess[i].length > 1) {
+            if (ppf[i] > MAX_ERRORS) {
+                if (freeFrames > 0) {
+                    framesPerProcess[i] = Arrays.copyOf(framesPerProcess[i], framesPerProcess[i].length + 1);
+                    framesPerProcess[i][framesPerProcess[i].length - 1] = -1;
+                    recentUsePerProcess[i] = Arrays.copyOf(recentUsePerProcess[i], recentUsePerProcess[i].length + 1);
+                    recentUsePerProcess[i][recentUsePerProcess[i].length - 1] = -1;
+                    freeFrames--;
+                } else {
+                    stoppedProcesses.add(i);
+                    freeFrames += framesPerProcess[i].length;
+                }
+            } else if (ppf[i] < MIN_ERRORS && framesPerProcess[i].length > 1) {
                 framesPerProcess[i] = Arrays.copyOfRange(framesPerProcess[i], 0, framesPerProcess[i].length - 1);
                 recentUsePerProcess[i] = Arrays.copyOfRange(recentUsePerProcess[i], 0, recentUsePerProcess[i].length - 1);
                 freeFrames++;
             }
+
+            processErrorsInTime[i] = 0;
         }
     }
-
-    private void checkStatus(int currentProcessNumber) {
-        calculatePPF(currentProcessNumber);
-
-        if (ppf[currentProcessNumber] > MAX_ERRORS) {
-            if (freeFrames > 0) {
-                framesPerProcess[currentProcessNumber] = Arrays.copyOf(framesPerProcess[currentProcessNumber], framesPerProcess[currentProcessNumber].length + 1);
-                framesPerProcess[currentProcessNumber][framesPerProcess[currentProcessNumber].length - 1] = -1;
-                recentUsePerProcess[currentProcessNumber] = Arrays.copyOf(recentUsePerProcess[currentProcessNumber], recentUsePerProcess[currentProcessNumber].length + 1);
-                recentUsePerProcess[currentProcessNumber][recentUsePerProcess[currentProcessNumber].length - 1] = -1;
-                freeFrames--;
-            } else {
-                stoppedProcesses.add(currentProcessNumber);
-                freeFrames += framesPerProcess[currentProcessNumber].length;
-            }
-        } else if (ppf[currentProcessNumber] < MIN_ERRORS && framesPerProcess[currentProcessNumber].length > 1) {
-            framesPerProcess[currentProcessNumber] = Arrays.copyOfRange(framesPerProcess[currentProcessNumber], 0, framesPerProcess[currentProcessNumber].length - 1);
-            recentUsePerProcess[currentProcessNumber] = Arrays.copyOfRange(recentUsePerProcess[currentProcessNumber], 0, recentUsePerProcess[currentProcessNumber].length - 1);
-            freeFrames++;
-        }
-    }
-
-    private void calculatePPF(int processNumber) {
-        ppf[processNumber] = (float) processErrorsInTime[processNumber] / TIME_WINDOW;
-    }
-
+    
     private void updatePhysicalMemory(int currentProcessNumber, int currentPageNumber) {
         int maxRecentUse = 0;
         int maxRecentUseIndex = 0;
