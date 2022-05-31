@@ -17,6 +17,13 @@ export type InitialStateTypes = {
   physicalMemorySize?: number;
   virtualMemorySize?: number;
   sequenceSize?: number;
+
+  //exercise4
+  processes?: number;
+  processLength?: number;
+  frames?: number;
+  scuffleTime?: number;
+  scufflePercent?: number;
 };
 
 const useForm = (initialState: InitialStateTypes) => {

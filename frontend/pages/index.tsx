@@ -32,8 +32,8 @@ const Home: NextPage = () => {
               link: '/exercise3',
             },
             {
-              desc: 'unknown',
-              link: '#',
+              desc: 'Frames allocation 🖼',
+              link: '/exercise4',
             },
             {
               desc: 'unknown',
