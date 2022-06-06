@@ -9,8 +9,12 @@ public class Manager {
     List<CPU> processors;
     Queue<Process> processesQueue;
 
-    public Manager() {
+    public Manager(int cpusAmount, int maxLoad, int minLoad, int tries) {
         processors = new ArrayList<>();
         processesQueue = new LinkedList<>();
+    }
+
+    public List<Results> runSimulation() {
+        return null;
     }
 }
