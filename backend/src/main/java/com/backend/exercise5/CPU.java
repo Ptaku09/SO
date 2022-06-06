@@ -42,4 +42,8 @@ public class CPU {
     public int getLoad() {
         return load;
     }
+
+    public List<Process> getActiveProcesses() {
+        return activeProcesses;
+    }
 }

@@ -5,25 +5,23 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 
-public class Algorithm1 implements Runnable {
+public class Algorithm2 implements Runnable {
     private final List<CPU> processors;
     private final Queue<Process> processesQueue;
     private final List<Double> averageLoadCheckPoints;
     private final List<Double> averageDeviationCheckPoints;
     private final int maxLoad;
-    private final int maxTries;
     private double averageLoad;
     private double averageDeviation;
     private int loadQuestions;
     private int processMovements;
 
-    public Algorithm1(List<CPU> processors, Queue<Process> processesQueue, int maxLoad, int maxTries) {
+    public Algorithm2(List<CPU> processors, Queue<Process> processesQueue, int maxLoad) {
         this.processors = processors;
         this.processesQueue = processesQueue;
         this.averageLoadCheckPoints = new ArrayList<>();
         this.averageDeviationCheckPoints = new ArrayList<>();
         this.maxLoad = maxLoad;
-        this.maxTries = maxTries;
         this.loadQuestions = 0;
         this.processMovements = 0;
     }
@@ -55,7 +53,7 @@ public class Algorithm1 implements Runnable {
         calculateAverageLoad();
         calculateAverageDeviation();
 
-        return new Results("Algorithm I", averageLoad, averageDeviation, loadQuestions, processMovements);
+        return new Results("Algorithm II", averageLoad, averageDeviation, loadQuestions, processMovements);
     }
 
     private void updateProcessors() {
@@ -65,20 +63,24 @@ public class Algorithm1 implements Runnable {
 
     private int findProcessor(int cpuNumber) {
         Random random = new Random();
+        this.loadQuestions++;
 
-        for (int i = 0; i < this.maxTries; i++) {
-            int processorNumber = random.nextInt(processors.size());
-            this.loadQuestions++;
+        if (processors.get(cpuNumber).getLoad() < maxLoad)
+            return cpuNumber;
+        else {
+            int randomProcessor = random.nextInt(processors.size());
 
-            if (processorNumber != cpuNumber && processors.get(processorNumber).getLoad() < maxLoad) {
-                this.processMovements++;
-                return processorNumber;
+            while (processors.get(randomProcessor).getLoad() >= maxLoad || randomProcessor == cpuNumber) {
+                this.loadQuestions++;
+                randomProcessor = random.nextInt(processors.size());
+                updateProcessors();
             }
 
-            updateProcessors();
-        }
+            this.loadQuestions++;
+            this.processMovements++;
 
-        return cpuNumber;
+            return randomProcessor;
+        }
     }
 
     private void calculateAverageLoadCheckPoint() {

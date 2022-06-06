@@ -31,6 +31,9 @@ public class Manager {
         results.add(new Algorithm1(processors, processesQueue1, maxLoad, maxTries).run());
         processors.forEach(CPU::reset);
 
+        results.add(new Algorithm2(processors, processesQueue2, maxLoad).run());
+        processors.forEach(CPU::reset);
+
         return results;
     }
 
@@ -50,7 +53,7 @@ public class Manager {
 
         for (int i = 0; i < 10000; i++) {
             int cpuNumber = random.nextInt(this.cpusAmount);
-            int timeToFinish = random.nextInt(400, 1000);
+            int timeToFinish = random.nextInt(500, 1000);
             int powerDemand = random.nextInt(3, 10);
             processesQueue1.add(new Process(cpuNumber, timeToFinish, powerDemand));
         }
