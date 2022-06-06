@@ -13,7 +13,7 @@ import java.util.List;
 public class FrameAllocationAlgorithms {
     @CrossOrigin
     @GetMapping("/exercise4")
-    public List<Results> exercise3(@RequestParam(value = "processes", defaultValue = "10") int numberOfProcesses, @RequestParam(value = "processLength", defaultValue = "1000") int testSequenceLengthPerProcess, @RequestParam(value = "frames", defaultValue = "50") int numberOfFrames, @RequestParam(value = "scuffleTime", defaultValue = "50") int scuffleTime, @RequestParam(value = "scufflePercent", defaultValue = "50") int scufflePercentToDetect) {
+    public List<Results> exercise3(@RequestParam(value = "processes", defaultValue = "10") int numberOfProcesses, @RequestParam(value = "processLength", defaultValue = "1000") int testSequenceLengthPerProcess, @RequestParam(value = "frames", defaultValue = "60") int numberOfFrames, @RequestParam(value = "scuffleTime", defaultValue = "50") int scuffleTime, @RequestParam(value = "scufflePercent", defaultValue = "50") int scufflePercentToDetect) {
         return new Manager(numberOfProcesses, testSequenceLengthPerProcess, numberOfFrames, scuffleTime, scufflePercentToDetect).runSimulation();
     }
 }

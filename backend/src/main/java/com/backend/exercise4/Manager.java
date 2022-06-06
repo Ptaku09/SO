@@ -22,11 +22,6 @@ public class Manager {
     private final int scufflePercentToDetect;
     private final int[] numberOfDifferentPagesPerProcess;
 
-    public static void main(String[] args) {
-        Manager manager = new Manager(BACKUP_NUMBER_OF_PROCESSES, BACKUP_TEST_SEQUENCE_LENGTH_PER_PROCESS, BACKUP_NUMBER_OF_FRAMES, BACKUP_SCUFFLE_TIME, BACKUP_SCUFFLE_PERCENT_TO_DETECT);
-        manager.runSimulation();
-    }
-
     public Manager(int numberOfProcesses, int testSequenceLengthPerProcess, int numberOfFrames, int scuffleTime, int scufflePercentToDetect) {
         int[] validatedData = validateData(numberOfProcesses, testSequenceLengthPerProcess, numberOfFrames, scuffleTime, scufflePercentToDetect);
         this.numberOfProcesses = validatedData[0];
