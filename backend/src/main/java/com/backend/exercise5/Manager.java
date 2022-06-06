@@ -26,16 +26,21 @@ public class Manager {
     }
 
     public List<Results> runSimulation() {
-        return null;
+        List<Results> results = new ArrayList<>();
+
+        results.add(new Algorithm1(processors, processesQueue1, maxLoad, maxTries).run());
+        processors.forEach(CPU::reset);
+
+        return results;
     }
 
     private void init() {
-        createCpus();
+        createProcessors();
         createProcesses();
         cloneProcesses();
     }
 
-    private void createCpus() {
+    private void createProcessors() {
         for (int i = 0; i < this.cpusAmount; i++)
             processors.add(new CPU());
     }
@@ -43,10 +48,10 @@ public class Manager {
     private void createProcesses() {
         Random random = new Random();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             int cpuNumber = random.nextInt(this.cpusAmount);
-            int timeToFinish = random.nextInt(5, 50);
-            int powerDemand = random.nextInt(1, 10);
+            int timeToFinish = random.nextInt(400, 1000);
+            int powerDemand = random.nextInt(3, 10);
             processesQueue1.add(new Process(cpuNumber, timeToFinish, powerDemand));
         }
     }

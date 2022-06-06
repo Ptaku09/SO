@@ -28,15 +28,18 @@ public class CPU {
             }
         }
 
-        for (int i : finishedProcesses)
-            activeProcesses.remove(i);
+        finishedProcesses
+                .stream()
+                .sorted((i1, i2) -> Integer.compare(i2, i1))
+                .forEach(i -> activeProcesses.remove(i.intValue()));
+    }
+
+    public void addProcess(Process process) {
+        activeProcesses.add(process);
+        load += process.getPowerDemand();
     }
 
     public int getLoad() {
         return load;
-    }
-
-    public void setLoad(int load) {
-        this.load = load;
     }
 }
