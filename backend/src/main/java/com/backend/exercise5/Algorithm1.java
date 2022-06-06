@@ -30,16 +30,10 @@ public class Algorithm1 implements Runnable {
 
     @Override
     public Results run() {
-        Random random = new Random();
         int averageLoadCounter = 1;
 
         while (!processesQueue.isEmpty()) {
-            Process currentProcess = random.nextInt(100) < 100 ? processesQueue.poll() : null;
-
-            if (currentProcess == null) {
-                updateProcessors();
-                continue;
-            }
+            Process currentProcess = processesQueue.poll();
 
             int cpuNumber = currentProcess.getCpuNumber();
             int foundedProcessor = findProcessor(cpuNumber);
