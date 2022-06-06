@@ -34,6 +34,9 @@ public class Manager {
         results.add(new Algorithm2(processors, processesQueue2, maxLoad).run());
         processors.forEach(CPU::reset);
 
+        results.add(new Algorithm3(processors, processesQueue3, minLoad, maxLoad).run());
+        processors.forEach(CPU::reset);
+
         return results;
     }
 

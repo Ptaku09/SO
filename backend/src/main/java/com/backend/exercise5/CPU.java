@@ -39,6 +39,11 @@ public class CPU {
         load += process.getPowerDemand();
     }
 
+    public Process removeFirst() {
+        load -= activeProcesses.get(0).getPowerDemand();
+        return activeProcesses.remove(0);
+    }
+
     public int getLoad() {
         return load;
     }
