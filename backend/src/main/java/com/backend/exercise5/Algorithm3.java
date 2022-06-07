@@ -91,7 +91,7 @@ public class Algorithm3 implements Runnable {
         else {
             int randomProcessor = random.nextInt(processors.size());
 
-            while (processors.get(randomProcessor).getLoad() >= maxLoad || randomProcessor == cpuNumber) {
+            while (processors.get(randomProcessor).getLoad() >= maxLoad) {
                 this.loadQuestions++;
                 randomProcessor = random.nextInt(processors.size());
                 updateProcessors();
