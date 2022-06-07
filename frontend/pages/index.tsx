@@ -36,8 +36,8 @@ const Home: NextPage = () => {
               link: '/exercise4',
             },
             {
-              desc: 'unknown',
-              link: '#',
+              desc: 'CPU load ⚙️',
+              link: '/exercise5',
             },
           ].map(({ link, desc }: { link: string; desc: string }, i: number) => {
             return <ExerciseBox key={i} number={i + 1} desc={desc} link={link} />;

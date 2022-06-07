@@ -24,6 +24,12 @@ export type InitialStateTypes = {
   frames?: number;
   scuffleTime?: number;
   scufflePercent?: number;
+
+  //exercise5
+  amountOfProcessors?: number;
+  maxLoad?: number;
+  minLoad?: number;
+  maxTries?: number;
 };
 
 const useForm = (initialState: InitialStateTypes) => {
