@@ -48,7 +48,7 @@ public class Algorithm3 extends Algorithm {
                     for (int i = 0; i < asks; i++) {
                         int cpuNumber = random.nextInt(processors.size());
 
-                        while (processors.get(cpuNumber).getLoad() > maxLoad && cpu.getLoad() < maxLoad)
+                        while (processors.get(cpuNumber).getLoad() > maxLoad - 20 && cpu.getLoad() < maxLoad)
                             cpu.addProcess(processors.get(cpuNumber).removeFirst());
                     }
                 });

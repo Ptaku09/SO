@@ -13,7 +13,7 @@ import java.util.List;
 public class CPULoadAlgorithms {
     @CrossOrigin
     @GetMapping("/exercise5")
-    public List<Results> exercise5(@RequestParam(value = "cpusAmount", defaultValue = "50") int cpusAmount, @RequestParam(value = "maxLoad", defaultValue = "85") int maxLoad, @RequestParam(value = "minLoad", defaultValue = "20") int minLoad, @RequestParam(value = "tries", defaultValue = "15") int tries) {
+    public List<Results> exercise5(@RequestParam(value = "cpusAmount", defaultValue = "50") int cpusAmount, @RequestParam(value = "maxLoad", defaultValue = "80") int maxLoad, @RequestParam(value = "minLoad", defaultValue = "30") int minLoad, @RequestParam(value = "tries", defaultValue = "15") int tries) {
         return new Manager(cpusAmount, maxLoad, minLoad, tries).runSimulation();
     }
 }

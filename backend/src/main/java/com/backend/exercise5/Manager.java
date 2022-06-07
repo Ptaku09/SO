@@ -12,10 +12,6 @@ public class Manager {
     private final int minLoad;
     private final int maxTries;
 
-    public static void main(String[] args) {
-        new Manager(50, 80, 20, 15).runSimulation();
-    }
-
     public Manager(int cpusAmount, int maxLoad, int minLoad, int maxTries) {
         this.processors = new ArrayList<>();
         this.processesQueue1 = new LinkedList<>();
@@ -59,11 +55,21 @@ public class Manager {
         Random random = new Random();
 
         for (int i = 0; i < 10000; i++) {
-            int cpuNumber = random.nextInt(this.cpusAmount);
-            int timeToFinish = random.nextInt(500, 1000);
-            int powerDemand = random.nextInt(3, 10);
+            int cpuNumber = generateProcessorNumber();
+            int timeToFinish = random.nextInt(500, 1300);
+            int powerDemand = random.nextInt(3, 20);
             processesQueue1.add(new Process(cpuNumber, timeToFinish, powerDemand));
         }
+    }
+
+    private int generateProcessorNumber() {
+        Random random = new Random();
+
+        // 50% chance to choose processor number from 0 to this.cpusAmount / 4
+        // 30% chance to choose processor number from this.cpusAmount / 4 to this.cpusAmount / 2
+        // 20% chance to choose processor number from this.cpusAmount / 2 to this.cpusAmount
+
+        return random.nextInt(100) < 50 ? random.nextInt(this.cpusAmount / 4) : random.nextInt(this.cpusAmount / 4, this.cpusAmount);
     }
 
     private void cloneProcesses() {
