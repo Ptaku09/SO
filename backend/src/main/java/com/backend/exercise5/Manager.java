@@ -12,6 +12,10 @@ public class Manager {
     private final int minLoad;
     private final int maxTries;
 
+    public static void main(String[] args) {
+        new Manager(50, 80, 20, 15).runSimulation();
+    }
+
     public Manager(int cpusAmount, int maxLoad, int minLoad, int maxTries) {
         this.processors = new ArrayList<>();
         this.processesQueue1 = new LinkedList<>();
@@ -28,13 +32,13 @@ public class Manager {
     public List<Results> runSimulation() {
         List<Results> results = new ArrayList<>();
 
-        results.add(new Algorithm1(processors, processesQueue1, maxLoad, maxTries).run());
+        results.add(new Algorithm1("Algorithm I", processors, processesQueue1, maxLoad, maxTries).run());
         processors.forEach(CPU::reset);
 
-        results.add(new Algorithm2(processors, processesQueue2, maxLoad).run());
+        results.add(new Algorithm2("Algorithm II", processors, processesQueue2, maxLoad).run());
         processors.forEach(CPU::reset);
 
-        results.add(new Algorithm3(processors, processesQueue3, minLoad, maxLoad).run());
+        results.add(new Algorithm3("Algorithm III", processors, processesQueue3, minLoad, maxLoad).run());
         processors.forEach(CPU::reset);
 
         return results;
