@@ -14,17 +14,18 @@ public class Algorithm3 extends Algorithm {
 
     @Override
     protected int findProcessor(int cpuNumber) {
-        Random random = new Random();
         this.loadQuestions++;
 
         if (processors.get(cpuNumber).getLoad() < maxLoad)
             return cpuNumber;
         else {
-            int randomProcessor = random.nextInt(processors.size());
+            int temp = cpuNumber + 1;
+            int randomProcessor = temp % processors.size();
 
             while (processors.get(randomProcessor).getLoad() >= maxLoad) {
                 this.loadQuestions++;
-                randomProcessor = random.nextInt(processors.size());
+                temp++;
+                randomProcessor = temp % processors.size();
                 updateProcessors();
             }
 
@@ -48,8 +49,10 @@ public class Algorithm3 extends Algorithm {
                     for (int i = 0; i < asks; i++) {
                         int cpuNumber = random.nextInt(processors.size());
 
-                        while (processors.get(cpuNumber).getLoad() > maxLoad - 20 && cpu.getLoad() < maxLoad)
+                        while (processors.get(cpuNumber).getLoad() > maxLoad - 20 && cpu.getLoad() < maxLoad) {
                             cpu.addProcess(processors.get(cpuNumber).removeFirst());
+                            this.processMovements++;
+                        }
                     }
                 });
     }

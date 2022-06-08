@@ -2,7 +2,6 @@ package com.backend.exercise5;
 
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
 
 public class Algorithm1 extends Algorithm {
     private final int maxTries;
@@ -14,10 +13,10 @@ public class Algorithm1 extends Algorithm {
 
     @Override
     protected int findProcessor(int cpuNumber) {
-        Random random = new Random();
+        int temp = cpuNumber + 1;
 
         for (int i = 0; i < this.maxTries; i++) {
-            int processorNumber = random.nextInt(processors.size());
+            int processorNumber = temp % processors.size();
             this.loadQuestions++;
 
             if (processorNumber != cpuNumber && processors.get(processorNumber).getLoad() < maxLoad) {
@@ -25,6 +24,7 @@ public class Algorithm1 extends Algorithm {
                 return processorNumber;
             }
 
+            temp++;
             updateProcessors();
         }
 
